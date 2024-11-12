@@ -36,13 +36,45 @@ namespace Ecommerce.Controllers
             return Ok(users);
         }
 
-        [HttpGet("ProductByCategory")]
+        [HttpGet("Product/{category}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<ICollection<Product>> productWithCategory(string category)
         {
             var products = _adminActions.getProductsBYCategory(category);
             return Ok(products);
         }
-        
+
+        [HttpGet("product/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Product> productWithId(int id) {
+            var result = _adminActions.getProductById(id);
+            if (result == null) {
+                return BadRequest();
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("addProduct")]
+        [ProducesResponseType (StatusCodes.Status200OK)]
+        public IActionResult AddProduct(Product product)
+        {
+            _adminActions.AddProduct(product);
+            return Ok();
+        }
+
+        [HttpDelete("delete/product/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult removeProduct(int id) {
+            _adminActions.DeleteProduct(id);
+            return Ok();
+        }
+
+        [HttpPut("update/Product")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult updateProduct(Product product) {
+            _adminActions.UpdateProduct(product);
+            return Ok();    
+        }
     }
 }
