@@ -9,6 +9,9 @@ namespace Ecommerce.Data.config
         public void Configure(EntityTypeBuilder<CartItem> builder) {
             builder.HasKey(n => n.cartItem_id);
 
+            builder.HasOne(n => n.cart)
+                .WithMany(n => n.cartItem)
+                .HasForeignKey(n => n.cart_id);
         }
     }
 }

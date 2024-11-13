@@ -25,7 +25,10 @@ namespace Ecommerce.Services
         {
             var user = _mapper.Map<User>(userdto);
             _context.Users.Add(user);
+            
+            
             _context.SaveChanges();
+            
         }
         public User Login(LoginDTO user) { 
             var result = _context.Users.Where(n => n.Name == user.username && n.Password == user.Password).FirstOrDefault();

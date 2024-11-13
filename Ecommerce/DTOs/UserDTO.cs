@@ -16,12 +16,16 @@ namespace Ecommerce.DTOs
         public string Email { get; set; }
 
         [Required]
-        [Phone]
+        
         public string phoneNumber { get; set; }
 
 
         [Required]
         [MinLength(8)]
         public string Password { get; set; }
+
+        [Required]
+        public string Roles { get; set; }
+
     }
 }

@@ -36,7 +36,8 @@ namespace Ecommerce.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Roles = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,27 +86,6 @@ namespace Ecommerce.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CartItems",
-                columns: table => new
-                {
-                    cartItem_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    cart_id = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<int>(type: "int", nullable: false),
-                    product_id1 = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CartItems", x => x.cartItem_id);
-                    table.ForeignKey(
-                        name: "FK_CartItems_Products_product_id1",
-                        column: x => x.product_id1,
-                        principalTable: "Products",
-                        principalColumn: "product_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -135,6 +115,33 @@ namespace Ecommerce.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "CartItems",
+                columns: table => new
+                {
+                    cartItem_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    cart_id = table.Column<int>(type: "int", nullable: false),
+                    product_id = table.Column<int>(type: "int", nullable: false),
+                    product_id1 = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItems", x => x.cartItem_id);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Carts_cart_id",
+                        column: x => x.cart_id,
+                        principalTable: "Carts",
+                        principalColumn: "cart_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Products_product_id1",
+                        column: x => x.product_id1,
+                        principalTable: "Products",
+                        principalColumn: "product_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "category_id", "category_name" },
@@ -147,8 +154,8 @@ namespace Ecommerce.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "user_id", "Email", "Name", "Password", "phoneNumber", "username" },
-                values: new object[] { 1, "admin@gmail.com", "admin", "admin", "9876543210", "admin" });
+                columns: new[] { "user_id", "Email", "Name", "Password", "Roles", "phoneNumber", "username" },
+                values: new object[] { 1, "admin@gmail.com", "admin", "admin", "admin", "9876543210", "admin" });
 
             migrationBuilder.InsertData(
                 table: "Products",
@@ -160,6 +167,11 @@ namespace Ecommerce.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_CartItems_cart_id",
+                table: "CartItems",
+                column: "cart_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CartItems_product_id1",
                 table: "CartItems",
                 column: "product_id1");
@@ -167,7 +179,8 @@ namespace Ecommerce.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_user_id",
                 table: "Carts",
-                column: "user_id");
+                column: "user_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_product_id1",
@@ -192,10 +205,10 @@ namespace Ecommerce.Migrations
                 name: "CartItems");
 
             migrationBuilder.DropTable(
-                name: "Carts");
+                name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "Products");

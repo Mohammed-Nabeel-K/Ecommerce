@@ -35,7 +35,8 @@ namespace Ecommerce.Migrations
 
                     b.HasKey("cart_id");
 
-                    b.HasIndex("user_id");
+                    b.HasIndex("user_id")
+                        .IsUnique();
 
                     b.ToTable("Carts");
                 });
@@ -58,6 +59,8 @@ namespace Ecommerce.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("cartItem_id");
+
+                    b.HasIndex("cart_id");
 
                     b.HasIndex("product_id1");
 
@@ -200,6 +203,10 @@ namespace Ecommerce.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Roles")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("phoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -219,6 +226,7 @@ namespace Ecommerce.Migrations
                             Email = "admin@gmail.com",
                             Name = "admin",
                             Password = "admin",
+                            Roles = "admin",
                             phoneNumber = "9876543210",
                             username = "admin"
                         });
@@ -227,8 +235,8 @@ namespace Ecommerce.Migrations
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>
                 {
                     b.HasOne("Ecommerce.Models.User", "user")
-                        .WithMany()
-                        .HasForeignKey("user_id")
+                        .WithOne("cart")
+                        .HasForeignKey("Ecommerce.Models.Cart", "user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -237,11 +245,19 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.CartItem", b =>
                 {
+                    b.HasOne("Ecommerce.Models.Cart", "cart")
+                        .WithMany("cartItem")
+                        .HasForeignKey("cart_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Ecommerce.Models.Product", "product")
                         .WithMany()
                         .HasForeignKey("product_id1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("cart");
 
                     b.Navigation("product");
                 });
@@ -276,9 +292,20 @@ namespace Ecommerce.Migrations
                     b.Navigation("category");
                 });
 
+            modelBuilder.Entity("Ecommerce.Models.Cart", b =>
+                {
+                    b.Navigation("cartItem");
+                });
+
             modelBuilder.Entity("Ecommerce.Models.Category", b =>
                 {
                     b.Navigation("products");
+                });
+
+            modelBuilder.Entity("Ecommerce.Models.User", b =>
+                {
+                    b.Navigation("cart")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

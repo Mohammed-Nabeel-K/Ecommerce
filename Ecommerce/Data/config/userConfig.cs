@@ -15,7 +15,9 @@ namespace Ecommerce.Data.config
                     Name ="admin",
                     Email = "admin@gmail.com",
                     phoneNumber = "9876543210",
-                    Password = "admin"
+                    Password = "admin",
+                    Roles = "admin"
+                    
                 }
             });
 
