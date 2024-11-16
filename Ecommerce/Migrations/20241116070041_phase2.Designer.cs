@@ -4,6 +4,7 @@ using Ecommerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    partial class UserDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241116070041_phase2")]
+    partial class phase2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,12 +31,6 @@ namespace Ecommerce.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
-
-                    b.Property<int>("cartItemsCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("total_amount")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("user_id")
                         .HasColumnType("uniqueidentifier");
@@ -58,9 +55,6 @@ namespace Ecommerce.Migrations
 
                     b.Property<Guid>("product_id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("quantity")
-                        .HasColumnType("int");
 
                     b.HasKey("cartItem_id");
 
@@ -90,17 +84,17 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            category_id = new Guid("ba0d87d0-b388-4818-9ed2-d11abd735150"),
+                            category_id = new Guid("fec5e67b-772e-4ea9-8562-3fcf8933d70c"),
                             category_name = "Books"
                         },
                         new
                         {
-                            category_id = new Guid("02881b3c-208e-4c4e-87ff-92df12ca6ec4"),
+                            category_id = new Guid("d2e3b5df-d459-4695-b450-174690e31448"),
                             category_name = "Phone"
                         },
                         new
                         {
-                            category_id = new Guid("bfec8c83-e8e8-4c96-ade2-c52f7c2e4c11"),
+                            category_id = new Guid("0b99656e-1731-48fb-b8e6-53bca008d883"),
                             category_name = "Laptop"
                         });
                 });
@@ -121,9 +115,6 @@ namespace Ecommerce.Migrations
 
                     b.Property<Guid>("product_id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("quantity")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("user_id")
                         .HasColumnType("uniqueidentifier");
@@ -205,7 +196,7 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            user_id = new Guid("a96670fe-a69a-4580-b1a3-a0c293c19b43"),
+                            user_id = new Guid("4027e3f6-0120-4c54-b5be-8487fcb3e468"),
                             Email = "admin@gmail.com",
                             Name = "admin",
                             Password = "admin",

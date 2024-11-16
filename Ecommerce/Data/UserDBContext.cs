@@ -12,6 +12,7 @@ namespace Ecommerce.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<WishList> WishLists { get; set; }
 
 
         public UserDBContext(DbContextOptions<UserDBContext> option) : base(option)
@@ -27,6 +28,7 @@ namespace Ecommerce.Data
             modelBuilder.ApplyConfiguration(new CartConfig());
             modelBuilder.ApplyConfiguration(new CatogoryConfig());
             modelBuilder.ApplyConfiguration(new cartItemConfig());
+            modelBuilder.ApplyConfiguration(new WishListConfig());  
 
         }
     }

@@ -1,5 +1,7 @@
 using Ecommerce.Configurations;
 using Ecommerce.Data;
+using Ecommerce.Middlewares;
+using Ecommerce.Models;
 using Ecommerce.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +19,15 @@ builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddScoped<IUserAuthServices,UserAuthServices>();
-builder.Services.AddScoped<IUserActionServices,UserActionServices>();
-builder.Services.AddScoped<IAdminActionServices,AdminActionServices>();
+builder.Services.AddTransient<IAuthServices,AuthServices>();
+builder.Services.AddTransient<IUserServices, UserSevices>();
+builder.Services.AddTransient<IProductServices, ProductServices>();
+builder.Services.AddTransient<ICartServices, CartServices>();
+builder.Services.AddTransient<IWishListServices, WishListServices>();
+builder.Services.AddTransient<IOrderServices, OrderServices>();
+builder.Services.AddTransient<IAdminServices, AdminServices>();
+
+builder.Services.AddScoped<User>();
 
 builder.Services.AddDbContext<UserDBContext>(options =>
 {
@@ -90,6 +98,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<UserContextMiddleware>();
 
 app.MapControllers();
 

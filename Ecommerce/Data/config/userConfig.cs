@@ -10,7 +10,7 @@ namespace Ecommerce.Data.config
             builder.HasData(new List<User>
             {
                 new User {
-                    user_id = 1,
+                    user_id = Guid.NewGuid(),
                     username = "admin",
                     Name ="admin",
                     Email = "admin@gmail.com",
@@ -23,7 +23,10 @@ namespace Ecommerce.Data.config
 
             builder.HasKey(e => e.user_id);
 
-           
+            builder.Property(e => e.user_id)
+                .HasDefaultValueSql("NEWID()");
+
+            builder.HasIndex(e => e.username).IsUnique();
 
         }
     }

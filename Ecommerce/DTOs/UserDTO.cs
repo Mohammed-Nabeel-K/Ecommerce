@@ -24,8 +24,7 @@ namespace Ecommerce.DTOs
         [MinLength(8)]
         public string Password { get; set; }
 
-        [Required]
-        public string Roles { get; set; }
+        
 
     }
 }

@@ -1,14 +1,19 @@
-﻿namespace Ecommerce.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Ecommerce.Models
 {
     public class CartItem
     {
-        public int cartItem_id { get; set; }
+        [Key]
+        public Guid cartItem_id { get; set; }
 
-        public int cart_id { get; set; }
+        public Guid cart_id { get; set; }
         public Cart cart { get; set; }
-
-        public int product_id { get; set; }
+        
+        public Guid product_id { get; set; }
         public Product product { get; set; }    
+
+        public int quantity { get; set; }
 
 
 

@@ -10,11 +10,16 @@ namespace Ecommerce.Data.config
         {
             builder.HasKey(n => n.cart_id);
 
+            builder.Property(n => n.cart_id)
+                .HasDefaultValueSql("NEWID()");
+
             builder.HasOne(n => n.user)
                 .WithOne(n => n.cart)
-                .HasForeignKey<Cart>(n => n.user_id);
-            
-            
+                .HasForeignKey<Cart>(n => n.user_id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Ecommerce.DTOs;
+﻿using Ecommerce.DTOs;
 using Ecommerce.Models;
 using Ecommerce.Services;
 using Microsoft.AspNetCore.Http;
@@ -13,25 +12,32 @@ namespace Ecommerce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserAuthController : ControllerBase
+    public class AuthController : ControllerBase
     {
-        public readonly IUserAuthServices _userAuthServices;
+        public readonly IAuthServices _userAuthServices;
         public readonly IConfiguration _configuration;
-        
-        public UserAuthController(IConfiguration config, IUserAuthServices userService)
+
+        public AuthController(IConfiguration config, IAuthServices userService)
         {
             _configuration = config;
-            _userAuthServices = userService;    
-            
+            _userAuthServices = userService;
+
         }
 
         [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Register([FromBody] UserDTO model)
         {
-            _userAuthServices.Register(model);
-            return Ok();
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+            
+            var result = _userAuthServices.Register(model);
+
+            return StatusCode(result.statuscode,result.message);
+            
         }
 
         [HttpPost("login")]
@@ -50,21 +56,23 @@ namespace Ecommerce.Controllers
                 var token = CreateToken(loginData);
                 return Ok(token);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return StatusCode(500, "Internal server error");
             }
-           
+
         }
 
         private string CreateToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var  credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
                 new Claim (ClaimTypes.NameIdentifier,user.user_id.ToString()),
-                new Claim (ClaimTypes.Name,user.Name),
+                new Claim (ClaimTypes.Name,user.username),
+                new Claim (ClaimTypes.Email,user.Email),
                 new Claim (ClaimTypes.Role,user.Roles)
             };
 

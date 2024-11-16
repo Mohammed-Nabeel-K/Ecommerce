@@ -9,20 +9,24 @@ namespace Ecommerce.Data.config
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.HasKey(n => n.category_id);
+
+            builder.Property(n => n.category_id)
+                .HasDefaultValueSql("NEWID()");
+
             builder.HasData(new Category()
             {
-                category_id = 1,
+                category_id = Guid.NewGuid(),
                 category_name = "Books"
                 
             },
             new Category()
             {
-                category_id = 2,
+                category_id = Guid.NewGuid(),
                 category_name = "Phone"
             },
             new Category()
             {
-                category_id = 3,
+                category_id = Guid.NewGuid(),
                 category_name = "Laptop"
             });
         }

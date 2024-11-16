@@ -17,8 +17,7 @@ namespace Ecommerce.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    category_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    category_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     category_name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -30,9 +29,8 @@ namespace Ecommerce.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    user_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    username = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -48,12 +46,11 @@ namespace Ecommerce.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    product_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     product_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     price = table.Column<int>(type: "int", nullable: false),
-                    category_id = table.Column<int>(type: "int", nullable: false)
+                    category_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,9 +67,8 @@ namespace Ecommerce.Migrations
                 name: "Carts",
                 columns: table => new
                 {
-                    cart_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    cart_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,30 +82,46 @@ namespace Ecommerce.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WishLists",
+                columns: table => new
+                {
+                    wishlist_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WishLists", x => x.wishlist_id);
+                    table.ForeignKey(
+                        name: "FK_WishLists_Users_wishlist_id",
+                        column: x => x.wishlist_id,
+                        principalTable: "Users",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
-                    order_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     order_status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     orderplaced = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    user_id1 = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<int>(type: "int", nullable: false),
-                    product_id1 = table.Column<int>(type: "int", nullable: false)
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.order_id);
                     table.ForeignKey(
-                        name: "FK_Orders_Products_product_id1",
-                        column: x => x.product_id1,
+                        name: "FK_Orders_Products_product_id",
+                        column: x => x.product_id,
                         principalTable: "Products",
                         principalColumn: "product_id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Orders_Users_user_id1",
-                        column: x => x.user_id1,
+                        name: "FK_Orders_Users_user_id",
+                        column: x => x.user_id,
                         principalTable: "Users",
                         principalColumn: "user_id",
                         onDelete: ReferentialAction.Cascade);
@@ -119,11 +131,9 @@ namespace Ecommerce.Migrations
                 name: "CartItems",
                 columns: table => new
                 {
-                    cartItem_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    cart_id = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<int>(type: "int", nullable: false),
-                    product_id1 = table.Column<int>(type: "int", nullable: false)
+                    cartItem_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    cart_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,8 +145,8 @@ namespace Ecommerce.Migrations
                         principalColumn: "cart_id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CartItems_Products_product_id1",
-                        column: x => x.product_id1,
+                        name: "FK_CartItems_Products_product_id",
+                        column: x => x.product_id,
                         principalTable: "Products",
                         principalColumn: "product_id",
                         onDelete: ReferentialAction.Cascade);
@@ -147,24 +157,15 @@ namespace Ecommerce.Migrations
                 columns: new[] { "category_id", "category_name" },
                 values: new object[,]
                 {
-                    { 1, "Books" },
-                    { 2, "Phone" },
-                    { 3, "Laptop" }
+                    { new Guid("2e4a5156-68f2-455a-946b-7ed2593b9b92"), "Laptop" },
+                    { new Guid("462ea5fb-3073-406c-af75-82bf03532f75"), "Phone" },
+                    { new Guid("9d28d83d-38fd-4f39-8f0c-0226cbe8884c"), "Books" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "user_id", "Email", "Name", "Password", "Roles", "phoneNumber", "username" },
-                values: new object[] { 1, "admin@gmail.com", "admin", "admin", "admin", "9876543210", "admin" });
-
-            migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "product_id", "category_id", "price", "product_name", "quantity" },
-                values: new object[,]
-                {
-                    { 1, 1, 300, "Wings Of Fire", 50 },
-                    { 2, 2, 30000, "SAMSUNG", 20 }
-                });
+                values: new object[] { new Guid("68bf6fd8-33a9-4c5e-8a1e-a9da8cc63b50"), "admin@gmail.com", "admin", "admin", "admin", "9876543210", "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_cart_id",
@@ -172,9 +173,10 @@ namespace Ecommerce.Migrations
                 column: "cart_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartItems_product_id1",
+                name: "IX_CartItems_product_id",
                 table: "CartItems",
-                column: "product_id1");
+                column: "product_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_user_id",
@@ -183,19 +185,25 @@ namespace Ecommerce.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_product_id1",
+                name: "IX_Orders_product_id",
                 table: "Orders",
-                column: "product_id1");
+                column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_user_id1",
+                name: "IX_Orders_user_id",
                 table: "Orders",
-                column: "user_id1");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_category_id",
                 table: "Products",
                 column: "category_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_username",
+                table: "Users",
+                column: "username",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -206,6 +214,9 @@ namespace Ecommerce.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "WishLists");
 
             migrationBuilder.DropTable(
                 name: "Carts");

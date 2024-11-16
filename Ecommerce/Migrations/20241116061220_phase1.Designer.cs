@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20241113160425_phase1")]
+    [Migration("20241116061220_phase1")]
     partial class phase1
     {
         /// <inheritdoc />
@@ -27,14 +27,13 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>
                 {
-                    b.Property<int>("cart_id")
+                    b.Property<Guid>("cart_id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cart_id"));
-
-                    b.Property<int>("user_id")
-                        .HasColumnType("int");
+                    b.Property<Guid>("user_id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("cart_id");
 
@@ -46,37 +45,33 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.CartItem", b =>
                 {
-                    b.Property<int>("cartItem_id")
+                    b.Property<Guid>("cartItem_id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cartItem_id"));
+                    b.Property<Guid>("cart_id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("cart_id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("product_id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("product_id1")
-                        .HasColumnType("int");
+                    b.Property<Guid>("product_id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("cartItem_id");
 
                     b.HasIndex("cart_id");
 
-                    b.HasIndex("product_id1");
+                    b.HasIndex("product_id")
+                        .IsUnique();
 
                     b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Category", b =>
                 {
-                    b.Property<int>("category_id")
+                    b.Property<Guid>("category_id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("category_id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("category_name")
                         .IsRequired()
@@ -89,28 +84,27 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            category_id = 1,
+                            category_id = new Guid("9d28d83d-38fd-4f39-8f0c-0226cbe8884c"),
                             category_name = "Books"
                         },
                         new
                         {
-                            category_id = 2,
+                            category_id = new Guid("462ea5fb-3073-406c-af75-82bf03532f75"),
                             category_name = "Phone"
                         },
                         new
                         {
-                            category_id = 3,
+                            category_id = new Guid("2e4a5156-68f2-455a-946b-7ed2593b9b92"),
                             category_name = "Laptop"
                         });
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Order", b =>
                 {
-                    b.Property<int>("order_id")
+                    b.Property<Guid>("order_id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("order_id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("order_status")
                         .IsRequired()
@@ -119,37 +113,30 @@ namespace Ecommerce.Migrations
                     b.Property<DateTime>("orderplaced")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("product_id")
-                        .HasColumnType("int");
+                    b.Property<Guid>("product_id")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("product_id1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("user_id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("user_id1")
-                        .HasColumnType("int");
+                    b.Property<Guid>("user_id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("order_id");
 
-                    b.HasIndex("product_id1");
+                    b.HasIndex("product_id");
 
-                    b.HasIndex("user_id1");
+                    b.HasIndex("user_id");
 
                     b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Product", b =>
                 {
-                    b.Property<int>("product_id")
+                    b.Property<Guid>("product_id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("product_id"));
-
-                    b.Property<int>("category_id")
-                        .HasColumnType("int");
+                    b.Property<Guid>("category_id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("price")
                         .HasColumnType("int");
@@ -166,33 +153,14 @@ namespace Ecommerce.Migrations
                     b.HasIndex("category_id");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            product_id = 1,
-                            category_id = 1,
-                            price = 300,
-                            product_name = "Wings Of Fire",
-                            quantity = 50
-                        },
-                        new
-                        {
-                            product_id = 2,
-                            category_id = 2,
-                            price = 30000,
-                            product_name = "SAMSUNG",
-                            quantity = 20
-                        });
                 });
 
             modelBuilder.Entity("Ecommerce.Models.User", b =>
                 {
-                    b.Property<int>("user_id")
+                    b.Property<Guid>("user_id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("user_id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -216,16 +184,19 @@ namespace Ecommerce.Migrations
 
                     b.Property<string>("username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("user_id");
+
+                    b.HasIndex("username")
+                        .IsUnique();
 
                     b.ToTable("Users");
 
                     b.HasData(
                         new
                         {
-                            user_id = 1,
+                            user_id = new Guid("68bf6fd8-33a9-4c5e-8a1e-a9da8cc63b50"),
                             Email = "admin@gmail.com",
                             Name = "admin",
                             Password = "admin",
@@ -233,6 +204,24 @@ namespace Ecommerce.Migrations
                             phoneNumber = "9876543210",
                             username = "admin"
                         });
+                });
+
+            modelBuilder.Entity("Ecommerce.Models.WishList", b =>
+                {
+                    b.Property<Guid>("wishlist_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("product_id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("user_id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("wishlist_id");
+
+                    b.ToTable("WishLists");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>
@@ -255,8 +244,8 @@ namespace Ecommerce.Migrations
                         .IsRequired();
 
                     b.HasOne("Ecommerce.Models.Product", "product")
-                        .WithMany()
-                        .HasForeignKey("product_id1")
+                        .WithOne("cartItem")
+                        .HasForeignKey("Ecommerce.Models.CartItem", "product_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -268,14 +257,14 @@ namespace Ecommerce.Migrations
             modelBuilder.Entity("Ecommerce.Models.Order", b =>
                 {
                     b.HasOne("Ecommerce.Models.Product", "product")
-                        .WithMany()
-                        .HasForeignKey("product_id1")
+                        .WithMany("order")
+                        .HasForeignKey("product_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Ecommerce.Models.User", "user")
-                        .WithMany()
-                        .HasForeignKey("user_id1")
+                        .WithMany("orders")
+                        .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -295,6 +284,17 @@ namespace Ecommerce.Migrations
                     b.Navigation("category");
                 });
 
+            modelBuilder.Entity("Ecommerce.Models.WishList", b =>
+                {
+                    b.HasOne("Ecommerce.Models.User", "user")
+                        .WithMany("wishList")
+                        .HasForeignKey("wishlist_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
+                });
+
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>
                 {
                     b.Navigation("cartItem");
@@ -305,10 +305,22 @@ namespace Ecommerce.Migrations
                     b.Navigation("products");
                 });
 
+            modelBuilder.Entity("Ecommerce.Models.Product", b =>
+                {
+                    b.Navigation("cartItem")
+                        .IsRequired();
+
+                    b.Navigation("order");
+                });
+
             modelBuilder.Entity("Ecommerce.Models.User", b =>
                 {
                     b.Navigation("cart")
                         .IsRequired();
+
+                    b.Navigation("orders");
+
+                    b.Navigation("wishList");
                 });
 #pragma warning restore 612, 618
         }

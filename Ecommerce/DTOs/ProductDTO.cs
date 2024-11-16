@@ -7,7 +7,7 @@ namespace Ecommerce.DTOs
         public string product_name { get; set; }
         public int quantity { get; set; }
         public int price { get; set; }
-        public int category_name { get; set; }
+        public string category_name { get; set; } 
         
     }
 }
