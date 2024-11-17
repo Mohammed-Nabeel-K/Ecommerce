@@ -28,6 +28,7 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult Register([FromBody] UserDTO model)
         {
             if (!ModelState.IsValid) {
@@ -44,44 +45,14 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult Login([FromBody] LoginDTO model)
         {
-            try
-            {
-                var loginData = _userAuthServices.Login(model);
-                if (loginData == null)
-                {
-                    return NotFound("not found");
-                }
-                var token = CreateToken(loginData);
-                return Ok(token);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Internal server error");
-            }
+            var log = _userAuthServices.Login(model);
+            return StatusCode(log.statuscode, log.message);
 
         }
 
-        private string CreateToken(User user)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim (ClaimTypes.NameIdentifier,user.user_id.ToString()),
-                new Claim (ClaimTypes.Name,user.username),
-                new Claim (ClaimTypes.Email,user.Email),
-                new Claim (ClaimTypes.Role,user.Roles)
-            };
-
-            var token = new JwtSecurityToken(
-                    claims: claims,
-                    signingCredentials: credentials,
-                    expires: DateTime.Now.AddDays(1)
-                );
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+       
     }
 }

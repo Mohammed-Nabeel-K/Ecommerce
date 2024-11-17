@@ -26,6 +26,7 @@ builder.Services.AddTransient<ICartServices, CartServices>();
 builder.Services.AddTransient<IWishListServices, WishListServices>();
 builder.Services.AddTransient<IOrderServices, OrderServices>();
 builder.Services.AddTransient<IAdminServices, AdminServices>();
+builder.Services.AddTransient<IAddressServices, AddressServices>();
 
 builder.Services.AddScoped<User>();
 

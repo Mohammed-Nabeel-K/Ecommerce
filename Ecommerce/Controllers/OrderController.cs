@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Data;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ namespace Ecommerce.Controllers
             _orderServices = orderServices;
         }
 
+        [Authorize(Roles = "user")]
         [HttpPost("add/order")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,21 +32,30 @@ namespace Ecommerce.Controllers
             return StatusCode(result.statuscode, result.message);
         }
 
+        [Authorize(Roles = "admin,user")]
         [HttpPut("update/{order_id}")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult orderUpdate(Guid order_id, string order_status) 
         {
             var result = _orderServices.updateOrder(order_id, order_status);
             return StatusCode(result.statuscode,result.message);
         }
 
+        [Authorize(Roles = "admin,user")]
         [HttpDelete("delete/{order_id}")]
-        public IActionResult orderDelete(Guid order_id) 
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult cancelDelete(Guid order_id) 
         { 
             var result = _orderServices.deleteOrder(order_id);
             return StatusCode(result.statuscode, result.message);
         }
 
+        [Authorize(Roles = "admin,user")]
         [HttpGet("orderbyUser")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult orderslistForUser()
         {
             var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
@@ -58,7 +69,10 @@ namespace Ecommerce.Controllers
 
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("allorders")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult orderslist()
         {
             

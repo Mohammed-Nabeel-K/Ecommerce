@@ -13,9 +13,12 @@ namespace Ecommerce.Models
         public string Password { get; set; }
         public string Roles { get; set; } = "user";
 
+        public bool IsBlocked {  get; set; }
+
         public Cart cart { get; set; }
         public ICollection<Order> orders { get; set; }
 
         public ICollection<WishList> wishList { get; set; }
+        public ICollection<Address> addresses { get; set; }
     }
 }

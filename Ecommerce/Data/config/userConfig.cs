@@ -15,10 +15,20 @@ namespace Ecommerce.Data.config
                     Name ="admin",
                     Email = "admin@gmail.com",
                     phoneNumber = "9876543210",
-                    Password = "admin",
+                    Password = BCrypt.Net.BCrypt.HashPassword("adminadm"),
                     Roles = "admin"
                     
-                }
+                },
+                new User {
+                    user_id = Guid.NewGuid(),
+                    username = "nabeel",
+                    Name ="nabeel",
+                    Email = "nabeel@gmail.com",
+                    phoneNumber = "9876543210",
+                    Password = BCrypt.Net.BCrypt.HashPassword("nabeelna"),
+                    Roles = "admin"
+
+                },
             });
 
             builder.HasKey(e => e.user_id);

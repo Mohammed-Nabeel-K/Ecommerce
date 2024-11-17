@@ -4,6 +4,7 @@ using Ecommerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    partial class UserDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241117174601_phase6")]
+    partial class phase6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,17 +120,17 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            category_id = new Guid("6a854aa4-ab95-4730-84f1-a507f411bb84"),
+                            category_id = new Guid("b54b51cf-c509-4887-a846-a0e4e463d0ae"),
                             category_name = "Books"
                         },
                         new
                         {
-                            category_id = new Guid("53c70a4f-0c8d-4761-bdfa-44b527e2298a"),
+                            category_id = new Guid("ec09a99b-2b24-4485-8d08-ac840f1a80b8"),
                             category_name = "Phone"
                         },
                         new
                         {
-                            category_id = new Guid("952541c3-6bb2-43b2-b9cf-211e18b23035"),
+                            category_id = new Guid("0b346cfa-4894-42bd-a0e1-966da0f39147"),
                             category_name = "Laptop"
                         });
                 });
@@ -235,22 +238,22 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            user_id = new Guid("d88391f0-b809-4046-83c7-4df87624abfc"),
+                            user_id = new Guid("57d987a6-ac26-46f6-9299-fd66d8496f32"),
                             Email = "admin@gmail.com",
                             IsBlocked = false,
                             Name = "admin",
-                            Password = "$2a$11$5pdkyu80I9hCXX93i4/nA.i4TnJOrvojqWB4098iyqjEyDy9b9XS6",
+                            Password = "admina",
                             Roles = "admin",
                             phoneNumber = "9876543210",
                             username = "admin"
                         },
                         new
                         {
-                            user_id = new Guid("70563f92-8149-4957-b893-beea9e750017"),
+                            user_id = new Guid("9038a617-5a20-49b0-b7d8-488163379a22"),
                             Email = "nabeel@gmail.com",
                             IsBlocked = false,
                             Name = "nabeel",
-                            Password = "$2a$11$jt9gg2F7mUf4RngTzaTareEKnRNtR4ix1TlcUeqLSmi3.FdtmHyse",
+                            Password = "nabeel",
                             Roles = "admin",
                             phoneNumber = "9876543210",
                             username = "nabeel"

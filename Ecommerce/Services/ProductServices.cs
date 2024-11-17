@@ -8,6 +8,7 @@ namespace Ecommerce.Services
 {
     public interface IProductServices
     {
+        public ICollection<ProductGetDTO> GetProducts();  
         public ICollection<ProductGetDTO> getProductsBYCategory(string category);
         public ProductGetDTO getProductById(Guid id);
         public Result AddProduct(ProductDTO productdto);
@@ -24,6 +25,14 @@ namespace Ecommerce.Services
             _dbContext = context;
             _mapper = mapper;
         }
+
+        public ICollection<ProductGetDTO> GetProducts()
+        {
+            var products = _dbContext.Products.ToList();
+            var productgetdto = _mapper.Map<ICollection<ProductGetDTO>>(products);
+            return productgetdto;
+        }
+
         public ICollection<ProductGetDTO> getProductsBYCategory(string category)
         {
             var result = _dbContext.Products.Where(n => n.category.category_name == category).Include(u => u.category).ToList();

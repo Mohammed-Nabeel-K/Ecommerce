@@ -1,6 +1,7 @@
 ﻿using Ecommerce.DTOs;
 using Ecommerce.Models;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,13 @@ namespace Ecommerce.Controllers
         public ProductController(IProductServices productServices)
         {
             _productServices = productServices;
+        }
+
+        [HttpGet("allproducts")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<ICollection<ProductGetDTO>> getproducts() {
+            var res = _productServices.GetProducts();
+            return Ok(res);
         }
 
         [HttpGet("{category}")]
@@ -37,9 +45,11 @@ namespace Ecommerce.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("addProduct")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult AddProduct(ProductDTO productdto)
         {
             var res = _productServices.AddProduct(productdto);
@@ -47,9 +57,11 @@ namespace Ecommerce.Controllers
             return StatusCode(res.statuscode,res.message);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult removeProduct(Guid id)
         {
             var res = _productServices.DeleteProduct(id);
@@ -57,8 +69,10 @@ namespace Ecommerce.Controllers
             return StatusCode(res.statuscode, res.message);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("update")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult updateProduct(ProductGetDTO productdto)
         {

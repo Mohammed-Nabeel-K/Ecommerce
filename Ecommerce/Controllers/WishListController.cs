@@ -17,7 +17,7 @@ namespace Ecommerce.Controllers
             _wishlistservice = wishListServices;
         }
 
-        [Authorize]
+        [Authorize(Roles = "user")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -29,7 +29,7 @@ namespace Ecommerce.Controllers
             return StatusCode(res.statuscode,res.message);
         }
 
-        [Authorize]
+        [Authorize(Roles = "user")]
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

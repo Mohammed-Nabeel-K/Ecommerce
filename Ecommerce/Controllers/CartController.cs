@@ -23,6 +23,7 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public IActionResult addProducttoCart(Guid product_id,int quantity)
         {
@@ -31,21 +32,24 @@ namespace Ecommerce.Controllers
             return StatusCode(result.statuscode,result.message);
         }
 
-        [HttpDelete]
+        [Authorize(Roles = "user")]
+        [HttpDelete("remove/{cartItem_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public  IActionResult removeFromCart(Guid cartItem_id)
         {
             var result = _cartServices.removeFromCart(cartItem_id);
             return StatusCode(result.statuscode, result.message);
         }
 
-        [HttpPost]
+        [Authorize(Roles = "user")]
+        [HttpPost("checkout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult checkout()
         {
             var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
             var result = _cartServices.checkoutFromCart(user_id);
-
             return StatusCode(result.statuscode, result.message);
         }
     }

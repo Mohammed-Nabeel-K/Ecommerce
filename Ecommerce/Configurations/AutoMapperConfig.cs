@@ -15,6 +15,7 @@ namespace Ecommerce.Configurations
             CreateMap<Order,OrderUserDTO>().ForMember(n => n.product_name, e => e.MapFrom(s=> s.product.product_name));
             CreateMap<Order,OrderAdminDTO>().ForMember(n => n.product_name, e => e.MapFrom(a => a.product.product_name))
                 .ForMember(n => n.username,e => e.MapFrom(a => a.user.username));
+            CreateMap<AddressDTO, Address>();
         }
     }
 }

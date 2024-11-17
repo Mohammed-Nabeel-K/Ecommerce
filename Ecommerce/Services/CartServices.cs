@@ -63,12 +63,21 @@ namespace Ecommerce.Services
         }
         public Result checkoutFromCart(Guid user_id)
         {
-            var cart = _dbContext.Carts.FirstOrDefault(n => n.user_id == user_id);
-            var cartItems = _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id);
-            foreach (var item in cartItems) {
-                var result = _orderservices.placeOrder(item.product_id, user_id, item.quantity);
+            try
+            {
+                var cart = _dbContext.Carts.FirstOrDefault(n => n.user_id == user_id);
+                var cartItems = _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id);
+                foreach (var item in cartItems)
+                {
+                    var result = _orderservices.placeOrder(item.product_id, user_id, item.quantity);
+                }
+                return new Result() { statuscode = 200, message = "order placed successfully" };
             }
-            return new Result() { statuscode = 200, message = "order placed successfully" };
+            catch(Exception ex)
+            {
+                return new Result() { statuscode = 500, message = ex.Message };
+            }
+            
         }
         
     }
