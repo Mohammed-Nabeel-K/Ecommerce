@@ -13,6 +13,8 @@ namespace Ecommerce.Data.config
             builder.Property(n => n.category_id)
                 .HasDefaultValueSql("NEWID()");
 
+            builder.HasIndex(u => u.category_name).IsUnique();
+
             builder.HasData(new Category()
             {
                 category_id = Guid.NewGuid(),

@@ -32,10 +32,12 @@ namespace Ecommerce.Migrations
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     username = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    phoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    phoneNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Roles = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Roles = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsBlocked = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,11 +66,34 @@ namespace Ecommerce.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Addresses",
+                columns: table => new
+                {
+                    address_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    pincode = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Addresses", x => x.address_id);
+                    table.ForeignKey(
+                        name: "FK_Addresses_Users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "Users",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Carts",
                 columns: table => new
                 {
                     cart_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    cartItemsCount = table.Column<int>(type: "int", nullable: false),
+                    total_amount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,8 +118,8 @@ namespace Ecommerce.Migrations
                 {
                     table.PrimaryKey("PK_WishLists", x => x.wishlist_id);
                     table.ForeignKey(
-                        name: "FK_WishLists_Users_wishlist_id",
-                        column: x => x.wishlist_id,
+                        name: "FK_WishLists_Users_user_id",
+                        column: x => x.user_id,
                         principalTable: "Users",
                         principalColumn: "user_id",
                         onDelete: ReferentialAction.Cascade);
@@ -106,13 +131,20 @@ namespace Ecommerce.Migrations
                 {
                     order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     order_status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false),
                     orderplaced = table.Column<DateTime>(type: "datetime2", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    address_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.order_id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Addresses_address_id",
+                        column: x => x.address_id,
+                        principalTable: "Addresses",
+                        principalColumn: "address_id");
                     table.ForeignKey(
                         name: "FK_Orders_Products_product_id",
                         column: x => x.product_id,
@@ -133,7 +165,8 @@ namespace Ecommerce.Migrations
                 {
                     cartItem_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     cart_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,15 +190,24 @@ namespace Ecommerce.Migrations
                 columns: new[] { "category_id", "category_name" },
                 values: new object[,]
                 {
-                    { new Guid("2e4a5156-68f2-455a-946b-7ed2593b9b92"), "Laptop" },
-                    { new Guid("462ea5fb-3073-406c-af75-82bf03532f75"), "Phone" },
-                    { new Guid("9d28d83d-38fd-4f39-8f0c-0226cbe8884c"), "Books" }
+                    { new Guid("1f304d5d-2474-40df-8cd7-a53806d6240c"), "Phone" },
+                    { new Guid("2d35b7d7-1e27-4ede-afae-160c9f6cafcf"), "Laptop" },
+                    { new Guid("bedf2def-5ff5-48ae-bd45-d895bd6bda05"), "Books" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "user_id", "Email", "Name", "Password", "Roles", "phoneNumber", "username" },
-                values: new object[] { new Guid("68bf6fd8-33a9-4c5e-8a1e-a9da8cc63b50"), "admin@gmail.com", "admin", "admin", "admin", "9876543210", "admin" });
+                columns: new[] { "user_id", "CreatedTime", "Email", "IsBlocked", "Name", "Password", "Roles", "phoneNumber", "username" },
+                values: new object[,]
+                {
+                    { new Guid("8e50b25c-536c-4371-a0c0-a18cb93d26ff"), new DateTime(2024, 11, 18, 12, 22, 45, 134, DateTimeKind.Local).AddTicks(191), "nabeel@gmail.com", false, "nabeel", "$2a$11$TtDNbzldFeHPm4fLjLB2XuK6xx8o8nMG6twsEiq0d7apwIMZy4a2G", "admin", "8129747407", "nabeel" },
+                    { new Guid("bd9ea528-d584-493d-9c9c-c23cb28ca9fb"), new DateTime(2024, 11, 18, 12, 22, 44, 864, DateTimeKind.Local).AddTicks(6678), "admin@gmail.com", false, "admin", "$2a$11$dPDOaYHA259qc3OUW2V/3eL1fnCJAmFIdm5qVZOePaoNcNVsxaW0i", "admin", "9876543210", "admin" }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Addresses_user_id",
+                table: "Addresses",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_cart_id",
@@ -185,6 +227,11 @@ namespace Ecommerce.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_address_id",
+                table: "Orders",
+                column: "address_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_product_id",
                 table: "Orders",
                 column: "product_id");
@@ -200,10 +247,27 @@ namespace Ecommerce.Migrations
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_phoneNumber",
+                table: "Users",
+                column: "phoneNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_username",
                 table: "Users",
                 column: "username",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WishLists_user_id",
+                table: "WishLists",
+                column: "user_id");
         }
 
         /// <inheritdoc />
@@ -220,6 +284,9 @@ namespace Ecommerce.Migrations
 
             migrationBuilder.DropTable(
                 name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "Addresses");
 
             migrationBuilder.DropTable(
                 name: "Products");

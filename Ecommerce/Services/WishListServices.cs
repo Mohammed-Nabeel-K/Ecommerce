@@ -3,13 +3,14 @@ using Ecommerce.Data;
 using Ecommerce.DTOs;
 using Ecommerce.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Services
 {
     public interface IWishListServices
     {
-        public Result addWishList(Guid product_id, Guid user_id);
-        public Result deleteWishList(Guid product_id, Guid user_id);
+        public Task<Result> addWishList(Guid product_id, Guid user_id);
+        public Task<Result> deleteWishList(Guid product_id, Guid user_id);
     }
     public class WishListServices : IWishListServices
     {
@@ -20,9 +21,9 @@ namespace Ecommerce.Services
             _dbContext = context;
             _mapper = mapper;
         }
-        public Result addWishList(Guid product_id,Guid user_id)
+        public async Task<Result> addWishList(Guid product_id,Guid user_id)
         {
-            var prod = _dbContext.Products.FirstOrDefault(n => n.product_id == product_id);
+            var prod = await _dbContext.Products.FirstOrDefaultAsync(n => n.product_id == product_id);
             if (prod == null) 
             {
                 return new Result() { statuscode = 404, message = "product not found" };
@@ -43,13 +44,13 @@ namespace Ecommerce.Services
             return new Result() { statuscode = 200, message = "added to wishlist" };
         }
 
-        public Result deleteWishList(Guid product_id,Guid user_id)
+        public async Task<Result> deleteWishList(Guid product_id,Guid user_id)
         {
-            var prod = _dbContext.WishLists.Where(n => n.product_id == product_id && n.user_id == user_id).FirstOrDefault();
+            var prod = await _dbContext.WishLists.Where(n => n.product_id == product_id && n.user_id == user_id).FirstOrDefaultAsync();
             if (prod != null)
             {
                 _dbContext.WishLists.Remove(prod);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 return new Result() { statuscode = 200, message = "removed from wishlist" };
                 
             }

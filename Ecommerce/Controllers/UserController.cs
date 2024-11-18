@@ -21,18 +21,18 @@ namespace Ecommerce.Controllers
         [HttpGet("allUsers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<ICollection<UserDTO>> getAllUsers()
+        public async Task<ActionResult<ICollection<UserDTO>>> getAllUsers()
         {
-            var res = _userServices.getAllUsers();
+            var res = await _userServices.getAllUsers();
             return Ok(res);
         }
 
         [Authorize(Roles = "admin")]
         [HttpGet("UserByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<ICollection<UserDTO>> getUsersByName(string name)
+        public async Task<ActionResult<ICollection<UserDTO>>> getUsersByName(string name)
         {
-            var users = _userServices.getUsersWithName(name);
+            var users = await _userServices.getUsersWithName(name);
             return Ok(users);
         }
 
@@ -41,10 +41,10 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status404NotFound )]
-        public IActionResult blockUser(string username )
+        public async Task<IActionResult> blockUser(string username )
         {
             if (username == null) { return BadRequest(); }
-            var res = _userServices.blockUser(username);
+            var res = await _userServices.blockUser(username);
             return StatusCode(res.statuscode, res.message);
         }
 
@@ -53,10 +53,10 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult unblockUser(string username)
+        public async Task<IActionResult> unblockUser(string username)
         {
             if (username == null) { return BadRequest(); }
-            var res = _userServices.unblockUser(username);
+            var res = await _userServices.unblockUser(username);
             return StatusCode(res.statuscode, res.message);
         }
     }

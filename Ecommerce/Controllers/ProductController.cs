@@ -19,25 +19,25 @@ namespace Ecommerce.Controllers
 
         [HttpGet("allproducts")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<ICollection<ProductGetDTO>> getproducts() {
-            var res = _productServices.GetProducts();
+        public async Task<ActionResult<ICollection<ProductGetDTO>>> getproducts() {
+            var res = await _productServices.GetProducts();
             return Ok(res);
         }
 
         [HttpGet("{category}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<ICollection<Product>> productWithCategory(string category)
+        public async Task<ActionResult<ICollection<Product>>> productWithCategory(string category)
         {
-            var products = _productServices.getProductsBYCategory(category);
+            var products = await _productServices.getProductsBYCategory(category);
             return Ok(products);
         }
 
         [HttpGet("get/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<ProductDTO> productWithId(Guid id)
+        public async Task<ActionResult<ProductDTO>> productWithId(Guid id)
         {
-            var result = _productServices.getProductById(id);
+            var result = await _productServices.getProductById(id);
             if (result == null)
             {
                 return BadRequest();
@@ -49,10 +49,11 @@ namespace Ecommerce.Controllers
         [HttpPost("addProduct")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult AddProduct(ProductDTO productdto)
+        public async Task<IActionResult> AddProduct(ProductDTO productdto)
         {
-            var res = _productServices.AddProduct(productdto);
+            var res = await _productServices.AddProduct(productdto);
             
             return StatusCode(res.statuscode,res.message);
         }
@@ -61,10 +62,11 @@ namespace Ecommerce.Controllers
         [HttpDelete("delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult removeProduct(Guid id)
+        public async Task<IActionResult> removeProduct(Guid id)
         {
-            var res = _productServices.DeleteProduct(id);
+            var res = await _productServices.DeleteProduct(id);
             
             return StatusCode(res.statuscode, res.message);
         }
@@ -72,11 +74,12 @@ namespace Ecommerce.Controllers
         [Authorize(Roles = "admin")]
         [HttpPut("update")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult updateProduct(ProductGetDTO productdto)
+        public async Task<IActionResult> updateProduct(ProductGetDTO productdto)
         {
-            var res = _productServices.UpdateProduct(productdto);
+            var res = await _productServices.UpdateProduct(productdto);
             
             return StatusCode(res.statuscode,res.message);
         }

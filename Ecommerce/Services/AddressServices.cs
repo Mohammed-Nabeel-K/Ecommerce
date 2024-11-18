@@ -2,15 +2,16 @@
 using Ecommerce.Data;
 using Ecommerce.DTOs;
 using Ecommerce.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Services
 {
     public interface IAddressServices
     {
-        public Result addAddress(Guid user_id, AddressDTO address);
-        public Result removeAddress(Guid address_id);
-        public Result updateAddress(Guid address_id , AddressDTO addressdto);
-        public ICollection<Address> getAllAddress(Guid user_id);
+        public Task<Result> addAddress(Guid user_id, AddressDTO address);
+        public Task<Result> removeAddress(Guid address_id);
+        public Task<Result> updateAddress(Guid address_id , AddressDTO addressdto);
+        public Task<ICollection<AddressGetDTO>> getAllAddress(Guid user_id);
 
     }
     public class AddressServices : IAddressServices
@@ -22,7 +23,7 @@ namespace Ecommerce.Services
             _dbContext = context;
             _mapper = mapper;   
         }
-        public Result addAddress(Guid user_id,AddressDTO addressdto)
+        public async Task<Result> addAddress(Guid user_id,AddressDTO addressdto)
         {
             if (addressdto == null)
             {
@@ -33,7 +34,7 @@ namespace Ecommerce.Services
                 var address = _mapper.Map<Address>(addressdto);
                 address.user_id = user_id;
                 _dbContext.Addresses.Add(address);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 return new Result() { statuscode = 200, message = "address added" };
             }
             catch
@@ -42,7 +43,7 @@ namespace Ecommerce.Services
             }
             
         }
-        public Result removeAddress(Guid address_id)
+        public async Task<Result> removeAddress(Guid address_id)
         {
             if (address_id == null)
             {
@@ -50,9 +51,9 @@ namespace Ecommerce.Services
             }
             try
             {
-                var address = _dbContext.Addresses.FirstOrDefault(n => n.address_id == address_id);
+                var address = await _dbContext.Addresses.FirstOrDefaultAsync(n => n.address_id == address_id);
                 _dbContext.Addresses.Remove(address);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 
             }
             catch(Exception ex)
@@ -64,7 +65,7 @@ namespace Ecommerce.Services
             }
                 return new Result() { statuscode = 200, message = "address removed" };
         }
-        public Result updateAddress(Guid address_id, AddressDTO addressToUpdate)
+        public async Task<Result> updateAddress(Guid address_id, AddressDTO addressToUpdate)
         {
             if (addressToUpdate == null)
             {
@@ -72,12 +73,12 @@ namespace Ecommerce.Services
             }
             try
             {
-                var address = _dbContext.Addresses.FirstOrDefault(n => n.address_id.Equals(address_id));
+                var address = await _dbContext.Addresses.FirstOrDefaultAsync(n => n.address_id.Equals(address_id));
                 address.address = addressToUpdate.address;
                 address.pincode = addressToUpdate.pincode;
                 address.type = addressToUpdate.type;
                 _dbContext.Addresses.Update(address);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 return new Result() { statuscode = 200, message = "address added" };
             }
             catch
@@ -85,12 +86,13 @@ namespace Ecommerce.Services
                 return new Result() { statuscode = 500, message = " server error" };
             }
         }
-        public ICollection<Address> getAllAddress(Guid user_id)
+        public async Task<ICollection<AddressGetDTO>> getAllAddress(Guid user_id)
         {
             
-            var addresses = _dbContext.Addresses.Where(n => n.user_id == user_id).ToList();
+            var addresses = await _dbContext.Addresses.Where(n => n.user_id == user_id).ToListAsync();
+            var addressdto = _mapper.Map< ICollection<AddressGetDTO>>(addresses);
 
-            return addresses;
+            return addressdto;
 
             
             

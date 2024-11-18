@@ -9,5 +9,7 @@
 
         public Guid user_id { get; set; }
         public User user { get; set; }
+
+        public ICollection<Order> order { get; set; }
     }
 }

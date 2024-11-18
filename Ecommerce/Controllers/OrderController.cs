@@ -21,14 +21,14 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
-        public IActionResult orderAProduct(Guid product_id, int quantity)
+        public async Task<IActionResult> orderAProduct(Guid product_id, int quantity,Guid address_id)
         {
             var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
             if(user_id == null)
             {
                 return Unauthorized();
             }
-            var result = _orderServices.placeOrder(product_id,user_id,quantity);
+            var result = await _orderServices.placeOrder(product_id,user_id,quantity,address_id);
             return StatusCode(result.statuscode, result.message);
         }
 
@@ -36,9 +36,9 @@ namespace Ecommerce.Controllers
         [HttpPut("update/{order_id}")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult orderUpdate(Guid order_id, string order_status) 
+        public async Task<IActionResult> orderUpdate(Guid order_id, string order_status) 
         {
-            var result = _orderServices.updateOrder(order_id, order_status);
+            var result = await _orderServices.updateOrder(order_id, order_status);
             return StatusCode(result.statuscode,result.message);
         }
 
@@ -46,9 +46,9 @@ namespace Ecommerce.Controllers
         [HttpDelete("delete/{order_id}")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult cancelDelete(Guid order_id) 
+        public async Task<IActionResult> cancelDelete(Guid order_id) 
         { 
-            var result = _orderServices.deleteOrder(order_id);
+            var result = await _orderServices.deleteOrder(order_id);
             return StatusCode(result.statuscode, result.message);
         }
 
@@ -56,10 +56,10 @@ namespace Ecommerce.Controllers
         [HttpGet("orderbyUser")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult orderslistForUser()
+        public async Task<IActionResult> orderslistForUser()
         {
             var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
-            var result = _orderServices.getOrdersByUser(user_id);
+            var result = await _orderServices.getOrdersByUser(user_id);
             if (result == null)
             {
                 return NotFound();
@@ -73,10 +73,10 @@ namespace Ecommerce.Controllers
         [HttpGet("allorders")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult orderslist()
+        public async Task<IActionResult> orderslist()
         {
             
-            var result = _orderServices.getOrders();
+            var result = await _orderServices.getOrders();
             if(result == null)
             {
                 return NotFound();

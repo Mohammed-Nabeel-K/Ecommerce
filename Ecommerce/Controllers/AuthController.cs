@@ -29,13 +29,13 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public IActionResult Register([FromBody] UserDTO model)
+        public async Task<IActionResult> Register([FromBody] UserDTO model)
         {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
             
-            var result = _userAuthServices.Register(model);
+            var result = await _userAuthServices.Register(model);
 
             return StatusCode(result.statuscode,result.message);
             
@@ -46,9 +46,9 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult Login([FromBody] LoginDTO model)
+        public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
-            var log = _userAuthServices.Login(model);
+            var log = await _userAuthServices.Login(model);
             return StatusCode(log.statuscode, log.message);
 
         }

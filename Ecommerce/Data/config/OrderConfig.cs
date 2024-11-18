@@ -20,6 +20,13 @@ namespace Ecommerce.Data.config
                 .WithMany(u => u.orders)
                 .HasForeignKey(u => u.user_id)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(u => u.address)
+                .WithMany(u => u.order)
+                .HasForeignKey(u => u.address_id)
+                .OnDelete(DeleteBehavior.NoAction);
+
+                
         }
     }
 }

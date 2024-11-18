@@ -21,10 +21,10 @@ namespace Ecommerce.Controllers
         [HttpGet("get")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult allAddressByUser()
+        public async Task<IActionResult> allAddressByUser()
         {
             Guid user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
-            var result = _addressServices.getAllAddress(user_id);
+            var result = await _addressServices.getAllAddress(user_id);
             return Ok(result);
         }
 
@@ -35,10 +35,10 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public IActionResult addAddress(AddressDTO addressdto) 
+        public async Task<IActionResult> addAddress(AddressDTO addressdto) 
         {
             var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
-            var result = _addressServices.addAddress(user_id,addressdto);
+            var result = await _addressServices.addAddress(user_id,addressdto);
             return StatusCode(result.statuscode, result.message);
         }
 
@@ -48,9 +48,9 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult removeAddress(Guid address_id)
+        public async Task<IActionResult> removeAddress(Guid address_id)
         {
-            var result = _addressServices.removeAddress(address_id);
+            var result = await _addressServices.removeAddress(address_id);
             return StatusCode(result.statuscode, result.message);
         }
 
@@ -60,8 +60,8 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult updateuser(Guid address_id, AddressDTO addressdto) {
-            var result = _addressServices.updateAddress(address_id, addressdto);
+        public async Task<IActionResult> updateuser(Guid address_id, AddressDTO addressdto) {
+            var result = await _addressServices.updateAddress(address_id, addressdto);
             return StatusCode(result.statuscode,result.message);
         }
 

@@ -8,10 +8,10 @@ namespace Ecommerce.Services
 {
     public interface IUserServices
     {
-        public ICollection<UserDTO> getAllUsers();
-        public ICollection<UserDTO> getUsersWithName(string name);
-        public Result unblockUser(string username);
-        public Result blockUser(string username);
+        public Task<ICollection<UserDTO>> getAllUsers();
+        public Task<ICollection<UserDTO>> getUsersWithName(string name);
+        public Task<Result> unblockUser(string username);
+        public Task<Result> blockUser(string username);
     }
     public class UserSevices : IUserServices
     {
@@ -22,22 +22,22 @@ namespace Ecommerce.Services
             _dbContext = context;
             _mapper = mapper;
         }
-        public ICollection<UserDTO> getAllUsers()
+        public async Task<ICollection<UserDTO>> getAllUsers()
         {
-            var userresult = _dbContext.Users.Select(n => n).ToList();
+            var userresult = await _dbContext.Users.Select(n => n).ToListAsync();
             var result = _mapper.Map<ICollection<UserDTO>>(userresult);
             return (result);
         }
-        public ICollection<UserDTO> getUsersWithName(string name)
+        public async Task<ICollection<UserDTO>> getUsersWithName(string name)
         {
-            var userresult = _dbContext.Users.Where(n => n.Name == name).ToList();
+            var userresult = await _dbContext.Users.Where(n => n.Name == name).ToListAsync();
             var result = _mapper.Map<ICollection<UserDTO>>(userresult).ToList();
             return result;
         }
 
-        public Result blockUser(string username)
+        public async Task<Result> blockUser(string username)
         {
-            var user = _dbContext.Users.Find(username);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(n => n.username == username);
             if (user == null)
             {
                 return new Result() { statuscode = 404, message = "user not found" };
@@ -52,9 +52,9 @@ namespace Ecommerce.Services
             return new Result() { statuscode = 200, message = "user blocked" };
         }
 
-        public Result unblockUser(string username)
+        public async Task<Result> unblockUser(string username)
         {
-            var user = _dbContext.Users.Find(username);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(n => n.username == username);
             if (user == null)
             {
                 return new Result() { statuscode = 404, message = "user not found" };

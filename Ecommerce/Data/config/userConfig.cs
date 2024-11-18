@@ -24,7 +24,7 @@ namespace Ecommerce.Data.config
                     username = "nabeel",
                     Name ="nabeel",
                     Email = "nabeel@gmail.com",
-                    phoneNumber = "9876543210",
+                    phoneNumber = "8129747407",
                     Password = BCrypt.Net.BCrypt.HashPassword("nabeelna"),
                     Roles = "admin"
 
@@ -38,6 +38,11 @@ namespace Ecommerce.Data.config
 
             builder.HasIndex(e => e.username).IsUnique();
 
+            builder.HasIndex(e => e.Email).IsUnique();
+
+            builder.HasIndex(e => e.phoneNumber).IsUnique();
+
+            
         }
     }
 }

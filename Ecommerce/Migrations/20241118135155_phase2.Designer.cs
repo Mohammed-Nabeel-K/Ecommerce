@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20241117175033_phase8")]
-    partial class phase8
+    [Migration("20241118135155_phase2")]
+    partial class phase2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,26 +111,29 @@ namespace Ecommerce.Migrations
 
                     b.Property<string>("category_name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("category_id");
+
+                    b.HasIndex("category_name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
 
                     b.HasData(
                         new
                         {
-                            category_id = new Guid("6a854aa4-ab95-4730-84f1-a507f411bb84"),
+                            category_id = new Guid("a8be6d02-7d16-45ca-808c-0f0a7daf4228"),
                             category_name = "Books"
                         },
                         new
                         {
-                            category_id = new Guid("53c70a4f-0c8d-4761-bdfa-44b527e2298a"),
+                            category_id = new Guid("ae4a98f0-e05f-4bc0-9f79-aca14503e23e"),
                             category_name = "Phone"
                         },
                         new
                         {
-                            category_id = new Guid("952541c3-6bb2-43b2-b9cf-211e18b23035"),
+                            category_id = new Guid("9b942484-8872-406f-96ee-ab6e9bdfcf28"),
                             category_name = "Laptop"
                         });
                 });
@@ -141,6 +144,9 @@ namespace Ecommerce.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("address_id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("order_status")
                         .IsRequired()
@@ -159,6 +165,8 @@ namespace Ecommerce.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("order_id");
+
+                    b.HasIndex("address_id");
 
                     b.HasIndex("product_id");
 
@@ -201,9 +209,12 @@ namespace Ecommerce.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsBlocked")
                         .HasColumnType("bit");
@@ -222,13 +233,19 @@ namespace Ecommerce.Migrations
 
                     b.Property<string>("phoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("username")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("user_id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("phoneNumber")
+                        .IsUnique();
 
                     b.HasIndex("username")
                         .IsUnique();
@@ -238,24 +255,26 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            user_id = new Guid("d88391f0-b809-4046-83c7-4df87624abfc"),
+                            user_id = new Guid("0a29f8cb-4ded-49f5-8595-8f9088e24717"),
+                            CreatedTime = new DateTime(2024, 11, 18, 19, 21, 54, 918, DateTimeKind.Local).AddTicks(3204),
                             Email = "admin@gmail.com",
                             IsBlocked = false,
                             Name = "admin",
-                            Password = "$2a$11$5pdkyu80I9hCXX93i4/nA.i4TnJOrvojqWB4098iyqjEyDy9b9XS6",
+                            Password = "$2a$11$CIJUWN/hQ6SNY37pmeNhw.CFfMj8CBrTyqFXyxtZlh9T09HrLdn7i",
                             Roles = "admin",
                             phoneNumber = "9876543210",
                             username = "admin"
                         },
                         new
                         {
-                            user_id = new Guid("70563f92-8149-4957-b893-beea9e750017"),
+                            user_id = new Guid("91f379a7-d654-49f4-86c0-ce7d69349c87"),
+                            CreatedTime = new DateTime(2024, 11, 18, 19, 21, 55, 52, DateTimeKind.Local).AddTicks(8350),
                             Email = "nabeel@gmail.com",
                             IsBlocked = false,
                             Name = "nabeel",
-                            Password = "$2a$11$jt9gg2F7mUf4RngTzaTareEKnRNtR4ix1TlcUeqLSmi3.FdtmHyse",
+                            Password = "$2a$11$OdsmpO/dTckPm1TDSfM9Z..l0Wp.6d9xWAbCACoVutTJZdm0O.Hyy",
                             Roles = "admin",
-                            phoneNumber = "9876543210",
+                            phoneNumber = "8129747407",
                             username = "nabeel"
                         });
                 });
@@ -323,6 +342,12 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.Order", b =>
                 {
+                    b.HasOne("Ecommerce.Models.Address", "address")
+                        .WithMany("order")
+                        .HasForeignKey("address_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Ecommerce.Models.Product", "product")
                         .WithMany("order")
                         .HasForeignKey("product_id")
@@ -334,6 +359,8 @@ namespace Ecommerce.Migrations
                         .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("address");
 
                     b.Navigation("product");
 
@@ -360,6 +387,11 @@ namespace Ecommerce.Migrations
                         .IsRequired();
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("Ecommerce.Models.Address", b =>
+                {
+                    b.Navigation("order");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>

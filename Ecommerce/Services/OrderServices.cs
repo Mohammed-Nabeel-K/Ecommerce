@@ -9,11 +9,11 @@ namespace Ecommerce.Services
 {
     public interface IOrderServices
     {
-        public Result placeOrder(Guid product_id, Guid user_id, int quantity);
-        public Result updateOrder(Guid order_id, string order_status);
-        public Result deleteOrder(Guid order_id);
-        public ICollection<OrderAdminDTO> getOrders();
-        public ICollection<OrderUserDTO> getOrdersByUser(Guid user_id);
+        public Task<Result> placeOrder(Guid product_id, Guid user_id, int quantity, Guid address_id);
+        public Task<Result> updateOrder(Guid order_id, string order_status);
+        public Task<Result> deleteOrder(Guid order_id);
+        public Task<ICollection<OrderAdminDTO>> getOrders();
+        public Task<ICollection<OrderUserDTO>> getOrdersByUser(Guid user_id);
     }
 
     public class OrderServices : IOrderServices
@@ -25,8 +25,8 @@ namespace Ecommerce.Services
             _mapper = mapper;
         }
 
-        public Result placeOrder(Guid product_id, Guid user_id,int quantity) {
-            var product = _dbContext.Products.Where(n=> n.product_id == product_id).FirstOrDefault();
+        public async Task<Result> placeOrder(Guid product_id, Guid user_id,int quantity,Guid address_id) {
+            var product = await _dbContext.Products.Where(n=> n.product_id == product_id).FirstOrDefaultAsync();
             if (product != null) {
                 try
                 {
@@ -35,11 +35,12 @@ namespace Ecommerce.Services
                         product_id = product_id,
                         user_id = user_id,
                         quantity = quantity,
+                        address_id = address_id,
                         orderplaced = DateTime.Now,
                         order_status = "order placed"
                     };
                     _dbContext.Orders.Add(order);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     return new Result() { statuscode = 200, message = "order placed" };
                 }
                 catch (Exception ex) {
@@ -53,14 +54,14 @@ namespace Ecommerce.Services
         }
 
        
-        public Result updateOrder(Guid order_id, string order_status)
+        public async Task<Result> updateOrder(Guid order_id, string order_status)
         {
-            var ord = _dbContext.Orders.FirstOrDefault(n => n.order_id == order_id);
+            var ord = await _dbContext.Orders.FirstOrDefaultAsync(n => n.order_id == order_id);
             if (ord != null) {
                 try
                 {
                     ord.order_status = order_status;
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     return new Result() { statuscode = 200, message = "sucessfully edited" };
                 }
                 catch(Exception ex) 
@@ -73,15 +74,15 @@ namespace Ecommerce.Services
         }
 
 
-        public Result deleteOrder(Guid order_id)
+        public async Task<Result> deleteOrder(Guid order_id)
         {
-            var ord = _dbContext.Orders.FirstOrDefault(n => n.order_id == order_id);
+            var ord = await _dbContext.Orders.FirstOrDefaultAsync(n => n.order_id == order_id);
             if (ord != null)
             {
                 try
                 {
                     _dbContext.Orders.Remove(ord);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     return new Result() { statuscode = 200, message = "sucessfully deleted" };
                 }
                 catch (Exception ex)
@@ -93,15 +94,15 @@ namespace Ecommerce.Services
             return new Result() { statuscode = 404, message = "it is not a valid order" };
         }
 
-        public ICollection<OrderUserDTO> getOrdersByUser(Guid user_id) {
-            var orders = _dbContext.Orders.Where(u => u.user_id == user_id).Include(n => n.product);
+        public async Task<ICollection<OrderUserDTO>> getOrdersByUser(Guid user_id) {
+            var orders = await _dbContext.Orders.Where(u => u.user_id == user_id).Include(n => n.product).ToListAsync();
             var orderdto = _mapper.Map<ICollection<OrderUserDTO>>(orders);
             return orderdto;
         }
 
-        public ICollection<OrderAdminDTO> getOrders()
+        public async Task<ICollection<OrderAdminDTO>> getOrders()
         {
-            var orders = _dbContext.Orders.Include(n => n.product).Include(n => n.user);
+            var orders = await _dbContext.Orders.Include(n => n.product).Include(n => n.user).ToListAsync();
             var orderdto = _mapper.Map<ICollection<OrderAdminDTO>>(orders);
             return orderdto;
 

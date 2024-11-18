@@ -3,6 +3,7 @@ using BCrypt.Net;
 using Ecommerce.Data;
 using Ecommerce.DTOs;
 using Ecommerce.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,8 +13,8 @@ namespace Ecommerce.Services
 {
     public interface IAuthServices
     {
-        public Result Register(UserDTO user);
-        public Result Login(LoginDTO user);
+        public Task<Result> Register(UserDTO user);
+        public Task<Result> Login(LoginDTO user);
     }
     public class AuthServices : IAuthServices
     {
@@ -26,19 +27,19 @@ namespace Ecommerce.Services
             _mapper = mapper;
             _configuration = configuration;
         }
-        public Result Register(UserDTO userdto)
+        public async Task<Result> Register(UserDTO userdto)
         {
             var user = _mapper.Map<User>(userdto);
             try
             {
-                var getuse = _dbContext.Users.Where(u => u.username == user.username).FirstOrDefault();
+                var getuse = await _dbContext.Users.Where(u => u.username == user.username).FirstOrDefaultAsync();
                 if (getuse != null) {
                 return new Result() { statuscode = 409, message = "username already exist" };
                 }
 
                 user.Password = HashPassword(userdto.Password);
                 _dbContext.Users.Add(user);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 var getuser = _dbContext.Users.Where(u => u.username == user.username).FirstOrDefault();
 
                 int total = 0;
@@ -51,17 +52,17 @@ namespace Ecommerce.Services
                     cartItemsCount = count
                 };
                 _dbContext.Carts.Add(cart);
-                _dbContext.SaveChanges();
-                return new Result() { statuscode = 200, message = "successfully registered" };
+                await _dbContext.SaveChangesAsync();
+                return new Result() { statuscode = 201, message = "successfully registered" };
             }
             catch (Exception ex) {
-                return new Result() { statuscode = 200, message = ex.Message };
+                return new Result() { statuscode = 500, message = ex.Message };
             }
         }
-        public Result Login(LoginDTO user)
+        public async Task<Result> Login(LoginDTO user)
         {
             
-            var userData = _dbContext.Users.Where(n => n.username == user.username ).FirstOrDefault();
+            var userData = await _dbContext.Users.Where(n => n.username == user.username ).FirstOrDefaultAsync();
             bool resPass = VerifyHashed(user.Password, userData.Password);
             
             try
@@ -74,6 +75,10 @@ namespace Ecommerce.Services
                 if (!resPass) 
                 { 
                     return new Result() {statuscode = 401 , message = "incorrect password" }; 
+                }
+                if (userData.IsBlocked)
+                {
+                    return new Result() { statuscode = 401, message = "you are blocked" };
                 }
                 var token = CreateToken(userData);
                 return new Result(){statuscode = 200, message = token };
@@ -111,7 +116,15 @@ namespace Ecommerce.Services
         }
         private bool VerifyHashed(string password,string hashed)
         {
-            return BCrypt.Net.BCrypt.Verify(password, hashed);
+            try
+            {
+                return BCrypt.Net.BCrypt.Verify(password, hashed);
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+            
         } 
     }
 }

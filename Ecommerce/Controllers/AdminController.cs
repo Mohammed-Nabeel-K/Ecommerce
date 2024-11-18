@@ -19,6 +19,7 @@ namespace Ecommerce.Controllers
         [HttpGet("summury/all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult summuryAllProd()
         {
             var summary = _adminServices.summaryAllProducts();
@@ -28,6 +29,7 @@ namespace Ecommerce.Controllers
         [Authorize(Roles = "admin")]
         [HttpGet("summuryc/{category_name}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult summuryByCategory(string category_name)
         {
@@ -38,6 +40,7 @@ namespace Ecommerce.Controllers
         [Authorize(Roles = "admin")]
         [HttpGet("summuryp/{product_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult summuryByProducts(Guid product_id)
         {

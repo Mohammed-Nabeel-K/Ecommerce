@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20241116061220_phase1")]
+    [Migration("20241118065245_phase1")]
     partial class phase1
     {
         /// <inheritdoc />
@@ -25,12 +25,45 @@ namespace Ecommerce.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Ecommerce.Models.Address", b =>
+                {
+                    b.Property<Guid>("address_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("pincode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("user_id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("address_id");
+
+                    b.HasIndex("user_id");
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>
                 {
                     b.Property<Guid>("cart_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
+
+                    b.Property<int>("cartItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("total_amount")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("user_id")
                         .HasColumnType("uniqueidentifier");
@@ -55,6 +88,9 @@ namespace Ecommerce.Migrations
 
                     b.Property<Guid>("product_id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("cartItem_id");
 
@@ -84,17 +120,17 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            category_id = new Guid("9d28d83d-38fd-4f39-8f0c-0226cbe8884c"),
+                            category_id = new Guid("bedf2def-5ff5-48ae-bd45-d895bd6bda05"),
                             category_name = "Books"
                         },
                         new
                         {
-                            category_id = new Guid("462ea5fb-3073-406c-af75-82bf03532f75"),
+                            category_id = new Guid("1f304d5d-2474-40df-8cd7-a53806d6240c"),
                             category_name = "Phone"
                         },
                         new
                         {
-                            category_id = new Guid("2e4a5156-68f2-455a-946b-7ed2593b9b92"),
+                            category_id = new Guid("2d35b7d7-1e27-4ede-afae-160c9f6cafcf"),
                             category_name = "Laptop"
                         });
                 });
@@ -106,6 +142,9 @@ namespace Ecommerce.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<Guid>("address_id")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("order_status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -116,10 +155,15 @@ namespace Ecommerce.Migrations
                     b.Property<Guid>("product_id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("user_id")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("order_id");
+
+                    b.HasIndex("address_id");
 
                     b.HasIndex("product_id");
 
@@ -162,9 +206,15 @@ namespace Ecommerce.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -180,13 +230,19 @@ namespace Ecommerce.Migrations
 
                     b.Property<string>("phoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("username")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("user_id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("phoneNumber")
+                        .IsUnique();
 
                     b.HasIndex("username")
                         .IsUnique();
@@ -196,13 +252,27 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            user_id = new Guid("68bf6fd8-33a9-4c5e-8a1e-a9da8cc63b50"),
+                            user_id = new Guid("bd9ea528-d584-493d-9c9c-c23cb28ca9fb"),
+                            CreatedTime = new DateTime(2024, 11, 18, 12, 22, 44, 864, DateTimeKind.Local).AddTicks(6678),
                             Email = "admin@gmail.com",
+                            IsBlocked = false,
                             Name = "admin",
-                            Password = "admin",
+                            Password = "$2a$11$dPDOaYHA259qc3OUW2V/3eL1fnCJAmFIdm5qVZOePaoNcNVsxaW0i",
                             Roles = "admin",
                             phoneNumber = "9876543210",
                             username = "admin"
+                        },
+                        new
+                        {
+                            user_id = new Guid("8e50b25c-536c-4371-a0c0-a18cb93d26ff"),
+                            CreatedTime = new DateTime(2024, 11, 18, 12, 22, 45, 134, DateTimeKind.Local).AddTicks(191),
+                            Email = "nabeel@gmail.com",
+                            IsBlocked = false,
+                            Name = "nabeel",
+                            Password = "$2a$11$TtDNbzldFeHPm4fLjLB2XuK6xx8o8nMG6twsEiq0d7apwIMZy4a2G",
+                            Roles = "admin",
+                            phoneNumber = "8129747407",
+                            username = "nabeel"
                         });
                 });
 
@@ -221,7 +291,20 @@ namespace Ecommerce.Migrations
 
                     b.HasKey("wishlist_id");
 
+                    b.HasIndex("user_id");
+
                     b.ToTable("WishLists");
+                });
+
+            modelBuilder.Entity("Ecommerce.Models.Address", b =>
+                {
+                    b.HasOne("Ecommerce.Models.User", "user")
+                        .WithMany("addresses")
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>
@@ -256,6 +339,12 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.Order", b =>
                 {
+                    b.HasOne("Ecommerce.Models.Address", "address")
+                        .WithMany("order")
+                        .HasForeignKey("address_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Ecommerce.Models.Product", "product")
                         .WithMany("order")
                         .HasForeignKey("product_id")
@@ -267,6 +356,8 @@ namespace Ecommerce.Migrations
                         .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("address");
 
                     b.Navigation("product");
 
@@ -288,11 +379,16 @@ namespace Ecommerce.Migrations
                 {
                     b.HasOne("Ecommerce.Models.User", "user")
                         .WithMany("wishList")
-                        .HasForeignKey("wishlist_id")
+                        .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("Ecommerce.Models.Address", b =>
+                {
+                    b.Navigation("order");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.Cart", b =>
@@ -315,6 +411,8 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.User", b =>
                 {
+                    b.Navigation("addresses");
+
                     b.Navigation("cart")
                         .IsRequired();
 

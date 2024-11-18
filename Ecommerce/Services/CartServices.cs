@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Ecommerce.Data;
+using Ecommerce.DTOs;
 using Ecommerce.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,9 +8,10 @@ namespace Ecommerce.Services
 {
     public interface ICartServices
     {
-        public Result addProducttoCart(Guid productId, Guid userid, int quantity);
-        public Result removeFromCart(Guid cartitem_id);
-        public Result checkoutFromCart(Guid user_id);
+        public Task<Result> addProducttoCart(Guid productId, Guid userid, int quantity);
+        public Task<Result> removeFromCart(Guid cartitem_id);
+        public Task<Result> checkoutFromCart(Guid user_id, Guid address_id);
+        public Task<ICollection<CartItemDTO>> getAllFromCart(Guid user_id);
     }
     public class CartServices : ICartServices
     {
@@ -24,10 +26,10 @@ namespace Ecommerce.Services
             _orderservices = orderServices;
             
         }
-        public Result addProducttoCart(Guid productId, Guid userid,int quantity)
+        public async Task<Result> addProducttoCart(Guid productId, Guid userid,int quantity)
         {
             
-            var cart = _dbContext.Carts.Where(u => u.user_id == userid).FirstOrDefault();
+            var cart = await _dbContext.Carts.Where(u => u.user_id == userid).FirstOrDefaultAsync();
             if (cart == null)
             {
                 return new Result() { statuscode = 404, message = "cart not found" };
@@ -43,10 +45,10 @@ namespace Ecommerce.Services
                         product_id = productId
                     };
                     _dbContext.CartItems.Add(prod);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     cart.total_amount = _dbContext.CartItems.Where(n => n.cart_id ==cart.cart_id).Sum(n => n.product.price*n.product.quantity);
                     cart.cartItemsCount = _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id).Count();
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     return new Result() { statuscode = 200, message = " successfully added" };
                 }
                 catch (Exception ex) {
@@ -54,28 +56,53 @@ namespace Ecommerce.Services
                 }
             }
         }
-        public Result removeFromCart(Guid cartitem_id)
-        {
-            var cartItem = _dbContext.CartItems.Where(n => n.cartItem_id == cartitem_id).FirstOrDefault();
-            _dbContext.CartItems.Remove(cartItem);
-            _dbContext.SaveChanges();
-            return new Result() { statuscode = 200, message = "successfully removed" };
-        }
-        public Result checkoutFromCart(Guid user_id)
+        public async Task<Result> removeFromCart(Guid cartitem_id)
         {
             try
             {
-                var cart = _dbContext.Carts.FirstOrDefault(n => n.user_id == user_id);
-                var cartItems = _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id);
+                var cartItem = await _dbContext.CartItems.Where(n => n.cartItem_id == cartitem_id).FirstOrDefaultAsync();
+                _dbContext.CartItems.Remove(cartItem);
+                await _dbContext.SaveChangesAsync();
+                return new Result() { statuscode = 200, message = "successfully removed" };
+            }
+            catch(Exception ex)
+            {
+                return new Result() { statuscode = 500, message = ex.Message };
+            }
+        }
+        public async Task<Result> checkoutFromCart(Guid user_id,Guid address_id)
+        {
+            try
+            {
+                var cart = await _dbContext.Carts.FirstOrDefaultAsync(n => n.user_id == user_id);
+                var cartItems = await _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id).ToListAsync();
                 foreach (var item in cartItems)
                 {
-                    var result = _orderservices.placeOrder(item.product_id, user_id, item.quantity);
+                    var result = _orderservices.placeOrder(item.product_id, user_id, item.quantity,address_id);
+                    _dbContext.CartItems.Remove(item);
                 }
+                await _dbContext.SaveChangesAsync();
                 return new Result() { statuscode = 200, message = "order placed successfully" };
             }
             catch(Exception ex)
             {
                 return new Result() { statuscode = 500, message = ex.Message };
+            }
+            
+        }
+
+        public async Task<ICollection<CartItemDTO>> getAllFromCart(Guid user_id)
+        {
+            try
+            {
+                var cart = await _dbContext.Carts.FirstOrDefaultAsync(n => n.user_id == user_id);
+                var cartItems = await _dbContext.CartItems.Where(u => u.cart_id == cart.cart_id).Include(u => u.product).ToListAsync();
+                var cartit = _mapper.Map<ICollection<CartItemDTO>>(cartItems);
+                return cartit;
+            }
+            catch
+            {
+                return null;
             }
             
         }

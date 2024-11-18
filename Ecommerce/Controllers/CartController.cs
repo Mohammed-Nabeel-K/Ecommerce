@@ -25,10 +25,10 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public IActionResult addProducttoCart(Guid product_id,int quantity)
+        public async Task<IActionResult> addProducttoCart(Guid product_id,int quantity)
         {
             var userid = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
-            var result = _cartServices.addProducttoCart(product_id,userid, quantity);
+            var result = await _cartServices.addProducttoCart(product_id,userid, quantity);
             return StatusCode(result.statuscode,result.message);
         }
 
@@ -36,9 +36,9 @@ namespace Ecommerce.Controllers
         [HttpDelete("remove/{cartItem_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public  IActionResult removeFromCart(Guid cartItem_id)
+        public async Task<IActionResult> removeFromCart(Guid cartItem_id)
         {
-            var result = _cartServices.removeFromCart(cartItem_id);
+            var result = await _cartServices.removeFromCart(cartItem_id);
             return StatusCode(result.statuscode, result.message);
         }
 
@@ -46,11 +46,27 @@ namespace Ecommerce.Controllers
         [HttpPost("checkout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult checkout()
+        public async Task<IActionResult> checkout(Guid address_id)
         {
             var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
-            var result = _cartServices.checkoutFromCart(user_id);
+            var result = await _cartServices.checkoutFromCart(user_id,address_id);
             return StatusCode(result.statuscode, result.message);
+        }
+
+        [Authorize(Roles = "user")]
+        [HttpGet("cartitems")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> allcartItems()
+        {
+            var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
+            var result = await _cartServices.getAllFromCart(user_id);
+            if(result == null)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+            return Ok(result);
+
         }
     }
 }

@@ -8,12 +8,12 @@ namespace Ecommerce.Services
 {
     public interface IProductServices
     {
-        public ICollection<ProductGetDTO> GetProducts();  
-        public ICollection<ProductGetDTO> getProductsBYCategory(string category);
-        public ProductGetDTO getProductById(Guid id);
-        public Result AddProduct(ProductDTO productdto);
-        public Result UpdateProduct(ProductGetDTO productdto);
-        public Result DeleteProduct(Guid id);
+        public Task<ICollection<ProductGetDTO>> GetProducts();  
+        public Task<ICollection<ProductGetDTO>> getProductsBYCategory(string category);
+        public Task<ProductGetDTO> getProductById(Guid id);
+        public Task<Result> AddProduct(ProductDTO productdto);
+        public Task<Result> UpdateProduct(ProductGetDTO productdto);
+        public Task<Result> DeleteProduct(Guid id);
     }
     public class ProductServices : IProductServices
     {
@@ -26,28 +26,28 @@ namespace Ecommerce.Services
             _mapper = mapper;
         }
 
-        public ICollection<ProductGetDTO> GetProducts()
+        public async Task<ICollection<ProductGetDTO>> GetProducts()
         {
-            var products = _dbContext.Products.ToList();
+            var products = await _dbContext.Products.Include(n => n.category).ToListAsync();
             var productgetdto = _mapper.Map<ICollection<ProductGetDTO>>(products);
             return productgetdto;
         }
 
-        public ICollection<ProductGetDTO> getProductsBYCategory(string category)
+        public async Task<ICollection<ProductGetDTO>> getProductsBYCategory(string category)
         {
-            var result = _dbContext.Products.Where(n => n.category.category_name == category).Include(u => u.category).ToList();
+            var result = await _dbContext.Products.Where(n => n.category.category_name == category).Include(u => u.category).ToListAsync();
             var prodto = _mapper.Map<ICollection<ProductGetDTO>>(result);
             return prodto;
         }
-        public ProductGetDTO getProductById(Guid id)
+        public async Task<ProductGetDTO> getProductById(Guid id)
         {
-            var result = _dbContext.Products.Where(n => n.product_id == id).FirstOrDefault();
+            var result = await _dbContext.Products.Where(n => n.product_id == id).FirstOrDefaultAsync();
             var proddto = _mapper.Map<ProductGetDTO>(result);
             return proddto;
         }
-        public Result AddProduct(ProductDTO productdto)
+        public async Task<Result> AddProduct(ProductDTO productdto)
         {
-            var res = _dbContext.Categories.Where(n => n.category_name == productdto.category_name).FirstOrDefault();
+            var res = await _dbContext.Categories.Where(n => n.category_name == productdto.category_name).FirstOrDefaultAsync();
             if (res == null)
             {
                 return new Result() { statuscode = 404, message = "category not found" };
@@ -55,34 +55,34 @@ namespace Ecommerce.Services
             var product = _mapper.Map<Product>(productdto);
             product.category_id = res.category_id;
             _dbContext.Products.Add(product);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return new Result() { statuscode = 201, message = "product added" };
         }
-        public Result UpdateProduct(ProductGetDTO productdto)
+        public async Task<Result> UpdateProduct(ProductGetDTO productdto)
         {
             
-            var prod = _dbContext.Products.Where(n => n.product_id == productdto.product_id).FirstOrDefault();
+            var prod = await _dbContext.Products.Where(n => n.product_id == productdto.product_id).FirstOrDefaultAsync();
             if (prod != null)
             {
                 prod.product_name = productdto.product_name;
                 prod.price = productdto.price;
                 prod.quantity = productdto.quantity;
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 return new Result() { statuscode = 201, message = "updated successfully" };
 
             }
             return new Result() { statuscode = 400, message = "this product not on list" };
 
         }
-        public Result DeleteProduct(Guid id)
+        public async Task<Result> DeleteProduct(Guid id)
         {
-            var prod = _dbContext.Products.Where(p => p.product_id == id).FirstOrDefault();
+            var prod = await _dbContext.Products.Where(p => p.product_id == id).FirstOrDefaultAsync();
             if (prod == null)
             {
                 return new Result() { statuscode = 404, message = "product not found" };
             }
             _dbContext.Remove(prod);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return new Result() { statuscode = 200, message = "deleted succefully" };
         }
 

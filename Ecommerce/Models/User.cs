@@ -12,7 +12,7 @@ namespace Ecommerce.Models
         public string phoneNumber { get; set; }
         public string Password { get; set; }
         public string Roles { get; set; } = "user";
-
+        public DateTime CreatedTime { get; set; } = DateTime.Now;
         public bool IsBlocked {  get; set; }
 
         public Cart cart { get; set; }
