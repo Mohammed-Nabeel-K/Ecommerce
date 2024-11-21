@@ -24,6 +24,14 @@ namespace Ecommerce.Controllers
             return Ok(res);
         }
 
+        [HttpGet("paginated/products")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<ICollection<ProductGetDTO>>> paginatedProducts(int pageNum, int pageSize)
+        {
+            var res = await _productServices.paginatedProducts(pageNum ,pageSize);
+            return Ok(res);
+        }
+
         [HttpGet("{category}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ICollection<Product>>> productWithCategory(string category)

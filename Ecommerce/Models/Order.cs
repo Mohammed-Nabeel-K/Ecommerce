@@ -8,6 +8,7 @@ namespace Ecommerce.Models
         public Guid order_id { get; set; }
         public string order_status { get; set; }
         public int quantity {  get; set; }  
+        public int amount { get; set; }
         public DateTime orderplaced { get; set; } 
 
         public Guid user_id { get; set; }

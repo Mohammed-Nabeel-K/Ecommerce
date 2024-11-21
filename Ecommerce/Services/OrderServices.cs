@@ -35,6 +35,7 @@ namespace Ecommerce.Services
                         product_id = product_id,
                         user_id = user_id,
                         quantity = quantity,
+                        amount = quantity * product.price,
                         address_id = address_id,
                         orderplaced = DateTime.Now,
                         order_status = "order placed"

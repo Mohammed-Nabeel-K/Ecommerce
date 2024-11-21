@@ -11,6 +11,7 @@ namespace Ecommerce.Services
     {
         public Task<Result> addWishList(Guid product_id, Guid user_id);
         public Task<Result> deleteWishList(Guid product_id, Guid user_id);
+        public Task<ICollection<WishlistGetDTO>> getAllWishList(Guid user_id);
     }
     public class WishListServices : IWishListServices
     {
@@ -56,6 +57,13 @@ namespace Ecommerce.Services
             }
             return new Result() { statuscode = 404, message = "product not found" };
 
+        }
+
+        public async Task<ICollection<WishlistGetDTO>> getAllWishList(Guid user_id)
+        {
+            var wishlist = await _dbContext.WishLists.Where(n => n.user_id == user_id).ToListAsync();
+            var wishlistdto = _mapper.Map<ICollection<WishlistGetDTO>>(wishlist);
+            return wishlistdto;
         }
     }
 }

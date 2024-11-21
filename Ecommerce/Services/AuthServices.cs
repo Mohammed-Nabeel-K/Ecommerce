@@ -56,7 +56,7 @@ namespace Ecommerce.Services
                 return new Result() { statuscode = 201, message = "successfully registered" };
             }
             catch (Exception ex) {
-                return new Result() { statuscode = 500, message = ex.Message };
+                return new Result() { statuscode = 500, message = ex.InnerException.Message ?? ex.Message }; ;
             }
         }
         public async Task<Result> Login(LoginDTO user)

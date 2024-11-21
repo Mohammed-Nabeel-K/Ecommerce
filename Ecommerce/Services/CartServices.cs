@@ -9,7 +9,7 @@ namespace Ecommerce.Services
     public interface ICartServices
     {
         public Task<Result> addProducttoCart(Guid productId, Guid userid, int quantity);
-        public Task<Result> removeFromCart(Guid cartitem_id);
+        public Task<Result> removeFromCart(Guid cartitem_id, Guid userid);
         public Task<Result> checkoutFromCart(Guid user_id, Guid address_id);
         public Task<ICollection<CartItemDTO>> getAllFromCart(Guid user_id);
     }
@@ -56,12 +56,16 @@ namespace Ecommerce.Services
                 }
             }
         }
-        public async Task<Result> removeFromCart(Guid cartitem_id)
+        public async Task<Result> removeFromCart(Guid cartitem_id, Guid userid)
         {
             try
             {
                 var cartItem = await _dbContext.CartItems.Where(n => n.cartItem_id == cartitem_id).FirstOrDefaultAsync();
                 _dbContext.CartItems.Remove(cartItem);
+                await _dbContext.SaveChangesAsync();
+                var cart = await _dbContext.Carts.Where(u => u.user_id == userid).FirstOrDefaultAsync();
+                cart.total_amount = _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id).Sum(n => n.product.price * n.product.quantity);
+                cart.cartItemsCount = _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id).Count();
                 await _dbContext.SaveChangesAsync();
                 return new Result() { statuscode = 200, message = "successfully removed" };
             }

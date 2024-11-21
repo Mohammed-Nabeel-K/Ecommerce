@@ -40,5 +40,15 @@ namespace Ecommerce.Controllers
             var res = await _wishlistservice.deleteWishList(product_id,user_id);
             return StatusCode(res.statuscode, res.message);
         }
+
+        [Authorize(Roles = "user")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> getAllWishlists()
+        {
+            var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
+            var res = await _wishlistservice.getAllWishList(user_id);
+            return Ok(res);
+        }
     }
 }

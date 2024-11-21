@@ -38,7 +38,8 @@ namespace Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> removeFromCart(Guid cartItem_id)
         {
-            var result = await _cartServices.removeFromCart(cartItem_id);
+            var userid = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
+            var result = await _cartServices.removeFromCart(cartItem_id,userid);
             return StatusCode(result.statuscode, result.message);
         }
 
@@ -60,6 +61,7 @@ namespace Ecommerce.Controllers
         public async Task<IActionResult> allcartItems()
         {
             var user_id = Guid.Parse(HttpContext.Items["user_id"]?.ToString());
+            var userId = HttpContext.User.Claims.FirstOrDefault(n => n.Type == ClaimTypes.NameIdentifier);
             var result = await _cartServices.getAllFromCart(user_id);
             if(result == null)
             {

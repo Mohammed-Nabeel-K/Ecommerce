@@ -14,6 +14,7 @@ namespace Ecommerce.Services
         public Task<Result> AddProduct(ProductDTO productdto);
         public Task<Result> UpdateProduct(ProductGetDTO productdto);
         public Task<Result> DeleteProduct(Guid id);
+        public Task<ICollection<ProductGetDTO>> paginatedProducts(int pageNum, int pageSize);
     }
     public class ProductServices : IProductServices
     {
@@ -86,5 +87,12 @@ namespace Ecommerce.Services
             return new Result() { statuscode = 200, message = "deleted succefully" };
         }
 
+        public async Task<ICollection<ProductGetDTO>> paginatedProducts(int pageNum,int pageSize)
+        {
+            int total = _dbContext.Products.Count();
+            var products = await _dbContext.Products.Skip((pageNum - 1) * pageSize).Take(pageSize).ToListAsync();
+            var prod = _mapper.Map<ICollection<ProductGetDTO>>(products);
+            return prod;
+        }
     }
 }
