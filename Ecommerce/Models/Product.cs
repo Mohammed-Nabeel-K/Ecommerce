@@ -14,7 +14,7 @@ namespace Ecommerce.Models
         public Guid category_id { get; set; }
         public Category category { get; set; }
 
-        public CartItem cartItem { get; set; }
+        public ICollection<CartItem> cartItem { get; set; }
         public ICollection<Order> order { get; set; }
 
     }

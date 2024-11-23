@@ -18,7 +18,7 @@ namespace Ecommerce.Configurations
             CreateMap<AddressDTO, Address>();
             CreateMap<Address, AddressGetDTO>();
             CreateMap<CartItem, CartItemDTO>().ForMember(n => n.product_name, e => e.MapFrom(s => s.product.product_name))
-                .ForMember(n => n.price, e => e.MapFrom(s => s.product.price));
+                .ForMember(n => n.price, e => e.MapFrom(s => s.product.price ) );
         }
     }
 }

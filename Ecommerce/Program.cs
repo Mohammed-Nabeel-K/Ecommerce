@@ -28,6 +28,10 @@ builder.Services.AddTransient<IOrderServices, OrderServices>();
 builder.Services.AddTransient<IAdminServices, AdminServices>();
 builder.Services.AddTransient<IAddressServices, AddressServices>();
 builder.Services.AddTransient<ICategoryServices, CategorySevices>();
+builder.Services.AddTransient<IRazorpayService, RazorpayService>();
+
+builder.Services.Configure<RazorpaySettings>(
+    builder.Configuration.GetSection("Razorpay"));
 
 builder.Services.AddScoped<User>();
 
@@ -66,6 +70,7 @@ builder.Services.AddSwaggerGen(c =>
                     new string[] {}
                 }
             });
+    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "Razorpay API v1");
 });
 
 builder.Services.AddAuthentication(options =>

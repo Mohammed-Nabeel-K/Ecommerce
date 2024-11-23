@@ -38,14 +38,25 @@ namespace Ecommerce.Services
             {
                 try
                 {
-                    var prod = new CartItem()
+                    var cartItem = await _dbContext.CartItems.FirstOrDefaultAsync(u => u.product_id == productId && u.cart_id == cart.cart_id);
+                    if ( cartItem != null)
                     {
-                        cart_id = cart.cart_id,
-                        quantity = quantity,
-                        product_id = productId
-                    };
-                    _dbContext.CartItems.Add(prod);
-                    await _dbContext.SaveChangesAsync();
+                        cartItem.quantity += quantity;
+                        _dbContext.CartItems.Update(cartItem);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        var prod = new CartItem()
+                        {
+                            cart_id = cart.cart_id,
+                            quantity = quantity,
+                            product_id = productId
+                        };
+                        _dbContext.CartItems.Add(prod);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                    
                     cart.total_amount = _dbContext.CartItems.Where(n => n.cart_id ==cart.cart_id).Sum(n => n.product.price*n.product.quantity);
                     cart.cartItemsCount = _dbContext.CartItems.Where(n => n.cart_id == cart.cart_id).Count();
                     await _dbContext.SaveChangesAsync();

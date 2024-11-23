@@ -4,6 +4,7 @@ using Ecommerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ecommerce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    partial class UserDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241121092127_phase5")]
+    partial class phase5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,6 +83,9 @@ namespace Ecommerce.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.Property<int>("amount")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("cart_id")
                         .HasColumnType("uniqueidentifier");
 
@@ -119,17 +125,17 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            category_id = new Guid("dde2c829-c9d7-4a73-b556-9966ad33fb4b"),
+                            category_id = new Guid("f34981a3-40b5-44c5-9fd7-9f61cab42297"),
                             category_name = "Books"
                         },
                         new
                         {
-                            category_id = new Guid("85728bf3-7cf3-4978-9ef1-8c3a7ad15f48"),
+                            category_id = new Guid("e22bdb6c-7f42-49c1-89ff-7d9e95edf915"),
                             category_name = "Phone"
                         },
                         new
                         {
-                            category_id = new Guid("28b15d60-4454-487e-a361-0ca6d7cf197d"),
+                            category_id = new Guid("770dbde3-6ae2-4341-924f-00e0411d3af6"),
                             category_name = "Laptop"
                         });
                 });
@@ -254,24 +260,24 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            user_id = new Guid("d339cae1-247f-4ef1-955b-d1a8c0c4edc9"),
-                            CreatedTime = new DateTime(2024, 11, 21, 15, 9, 16, 675, DateTimeKind.Local).AddTicks(7744),
+                            user_id = new Guid("b117f77f-b91e-4bb3-a3af-31bbee9b9686"),
+                            CreatedTime = new DateTime(2024, 11, 21, 14, 51, 26, 411, DateTimeKind.Local).AddTicks(7841),
                             Email = "admin@gmail.com",
                             IsBlocked = false,
                             Name = "admin",
-                            Password = "$2a$11$iRkftWnTiqJirQMvdVvLleRtka4wZe8QFIbAGDmJccNOai04o57Ei",
+                            Password = "$2a$11$OaAptMlDG2dWS777RZp9ueDJMoiYrrV6pzDOjuJ2rALQjdEIt/8Ei",
                             Roles = "admin",
                             phoneNumber = "9876543210",
                             username = "admin"
                         },
                         new
                         {
-                            user_id = new Guid("c39baa18-00fd-40d0-818a-20523768798d"),
-                            CreatedTime = new DateTime(2024, 11, 21, 15, 9, 16, 837, DateTimeKind.Local).AddTicks(6943),
+                            user_id = new Guid("b8d4a43a-0625-4c7c-b265-6770371567cb"),
+                            CreatedTime = new DateTime(2024, 11, 21, 14, 51, 26, 563, DateTimeKind.Local).AddTicks(5845),
                             Email = "nabeel@gmail.com",
                             IsBlocked = false,
                             Name = "nabeel",
-                            Password = "$2a$11$pReVrGcvw.wu9l4PSIkNFehP9FDb3HI3pspP.bqMv2Coyjjvit/se",
+                            Password = "$2a$11$6IDFjZeOJOD1NdTxzCdZ3um4Pr0NhIEYfT3avPyxx.IkGlrcLKGK6",
                             Roles = "admin",
                             phoneNumber = "8129747407",
                             username = "nabeel"

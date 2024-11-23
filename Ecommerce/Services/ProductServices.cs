@@ -90,7 +90,7 @@ namespace Ecommerce.Services
         public async Task<ICollection<ProductGetDTO>> paginatedProducts(int pageNum,int pageSize)
         {
             int total = _dbContext.Products.Count();
-            var products = await _dbContext.Products.Skip((pageNum - 1) * pageSize).Take(pageSize).ToListAsync();
+            var products = await _dbContext.Products.Skip((pageNum - 1) * pageSize).Take(pageSize).Include(p => p.category).ToListAsync();
             var prod = _mapper.Map<ICollection<ProductGetDTO>>(products);
             return prod;
         }

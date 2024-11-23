@@ -18,8 +18,8 @@ namespace Ecommerce.Data.config
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(u => u.product)
-                .WithOne(u => u.cartItem)
-                .HasForeignKey<CartItem>(u => u.product_id);
+                .WithMany(u => u.cartItem)
+                .HasForeignKey(u => u.product_id);
         }
     }
 }
