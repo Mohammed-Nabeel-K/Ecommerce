@@ -13,6 +13,7 @@ namespace Ecommerce.Models
         public Guid user_id {  get; set; }
 
         public Guid product_id {  get; set; }
+        public Product product { get; set; } 
         public User user { get; set; }
     }
 }

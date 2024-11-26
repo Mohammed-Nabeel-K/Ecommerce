@@ -18,7 +18,7 @@ namespace Ecommerce.Migrations
                 columns: table => new
                 {
                     category_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    category_name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    category_name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -118,6 +118,12 @@ namespace Ecommerce.Migrations
                 {
                     table.PrimaryKey("PK_WishLists", x => x.wishlist_id);
                     table.ForeignKey(
+                        name: "FK_WishLists_Products_product_id",
+                        column: x => x.product_id,
+                        principalTable: "Products",
+                        principalColumn: "product_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_WishLists_Users_user_id",
                         column: x => x.user_id,
                         principalTable: "Users",
@@ -132,6 +138,7 @@ namespace Ecommerce.Migrations
                     order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     order_status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
+                    amount = table.Column<int>(type: "int", nullable: false),
                     orderplaced = table.Column<DateTime>(type: "datetime2", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     address_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -190,9 +197,9 @@ namespace Ecommerce.Migrations
                 columns: new[] { "category_id", "category_name" },
                 values: new object[,]
                 {
-                    { new Guid("1f304d5d-2474-40df-8cd7-a53806d6240c"), "Phone" },
-                    { new Guid("2d35b7d7-1e27-4ede-afae-160c9f6cafcf"), "Laptop" },
-                    { new Guid("bedf2def-5ff5-48ae-bd45-d895bd6bda05"), "Books" }
+                    { new Guid("4dcc30d4-d7b4-41d9-95b0-aa79a24d7af4"), "Laptop" },
+                    { new Guid("d49ae2f4-fc66-47c5-8147-060f795f979b"), "Phone" },
+                    { new Guid("ee86ceb3-e731-447f-a493-07cc944b2cc2"), "Books" }
                 });
 
             migrationBuilder.InsertData(
@@ -200,8 +207,8 @@ namespace Ecommerce.Migrations
                 columns: new[] { "user_id", "CreatedTime", "Email", "IsBlocked", "Name", "Password", "Roles", "phoneNumber", "username" },
                 values: new object[,]
                 {
-                    { new Guid("8e50b25c-536c-4371-a0c0-a18cb93d26ff"), new DateTime(2024, 11, 18, 12, 22, 45, 134, DateTimeKind.Local).AddTicks(191), "nabeel@gmail.com", false, "nabeel", "$2a$11$TtDNbzldFeHPm4fLjLB2XuK6xx8o8nMG6twsEiq0d7apwIMZy4a2G", "admin", "8129747407", "nabeel" },
-                    { new Guid("bd9ea528-d584-493d-9c9c-c23cb28ca9fb"), new DateTime(2024, 11, 18, 12, 22, 44, 864, DateTimeKind.Local).AddTicks(6678), "admin@gmail.com", false, "admin", "$2a$11$dPDOaYHA259qc3OUW2V/3eL1fnCJAmFIdm5qVZOePaoNcNVsxaW0i", "admin", "9876543210", "admin" }
+                    { new Guid("6dc96c27-30c4-49a1-b83b-5f31efddee3a"), new DateTime(2024, 11, 26, 15, 55, 57, 210, DateTimeKind.Local).AddTicks(5861), "admin@gmail.com", false, "admin", "$2a$11$otmMmjaaBCIsGjz1km7ajuLPVL32Pw4kc9Pkzo4geVEFzeEs7sQFm", "admin", "9876543210", "admin" },
+                    { new Guid("e99ab980-0d08-4d96-abc0-6093e3911473"), new DateTime(2024, 11, 26, 15, 55, 57, 642, DateTimeKind.Local).AddTicks(8045), "nabeel@gmail.com", false, "nabeel", "$2a$11$pz6pQf7/8ih10igi5prNoeFwqtMZQNY4vYpbMSl7gxYz8hCF9NB4S", "admin", "8129747407", "nabeel" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -217,13 +224,18 @@ namespace Ecommerce.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_product_id",
                 table: "CartItems",
-                column: "product_id",
-                unique: true);
+                column: "product_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_user_id",
                 table: "Carts",
                 column: "user_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_category_name",
+                table: "Categories",
+                column: "category_name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -263,6 +275,11 @@ namespace Ecommerce.Migrations
                 table: "Users",
                 column: "username",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WishLists_product_id",
+                table: "WishLists",
+                column: "product_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WishLists_user_id",

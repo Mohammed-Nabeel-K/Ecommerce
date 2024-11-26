@@ -61,7 +61,7 @@ namespace Ecommerce.Services
 
         public async Task<ICollection<WishlistGetDTO>> getAllWishList(Guid user_id)
         {
-            var wishlist = await _dbContext.WishLists.Where(n => n.user_id == user_id).ToListAsync();
+            var wishlist = await _dbContext.WishLists.Where(n => n.user_id == user_id).Include(n=>n.product).ToListAsync();
             var wishlistdto = _mapper.Map<ICollection<WishlistGetDTO>>(wishlist);
             return wishlistdto;
         }

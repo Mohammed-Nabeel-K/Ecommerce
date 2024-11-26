@@ -119,17 +119,17 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            category_id = new Guid("dde2c829-c9d7-4a73-b556-9966ad33fb4b"),
+                            category_id = new Guid("ee86ceb3-e731-447f-a493-07cc944b2cc2"),
                             category_name = "Books"
                         },
                         new
                         {
-                            category_id = new Guid("85728bf3-7cf3-4978-9ef1-8c3a7ad15f48"),
+                            category_id = new Guid("d49ae2f4-fc66-47c5-8147-060f795f979b"),
                             category_name = "Phone"
                         },
                         new
                         {
-                            category_id = new Guid("28b15d60-4454-487e-a361-0ca6d7cf197d"),
+                            category_id = new Guid("4dcc30d4-d7b4-41d9-95b0-aa79a24d7af4"),
                             category_name = "Laptop"
                         });
                 });
@@ -254,24 +254,24 @@ namespace Ecommerce.Migrations
                     b.HasData(
                         new
                         {
-                            user_id = new Guid("d339cae1-247f-4ef1-955b-d1a8c0c4edc9"),
-                            CreatedTime = new DateTime(2024, 11, 21, 15, 9, 16, 675, DateTimeKind.Local).AddTicks(7744),
+                            user_id = new Guid("6dc96c27-30c4-49a1-b83b-5f31efddee3a"),
+                            CreatedTime = new DateTime(2024, 11, 26, 15, 55, 57, 210, DateTimeKind.Local).AddTicks(5861),
                             Email = "admin@gmail.com",
                             IsBlocked = false,
                             Name = "admin",
-                            Password = "$2a$11$iRkftWnTiqJirQMvdVvLleRtka4wZe8QFIbAGDmJccNOai04o57Ei",
+                            Password = "$2a$11$otmMmjaaBCIsGjz1km7ajuLPVL32Pw4kc9Pkzo4geVEFzeEs7sQFm",
                             Roles = "admin",
                             phoneNumber = "9876543210",
                             username = "admin"
                         },
                         new
                         {
-                            user_id = new Guid("c39baa18-00fd-40d0-818a-20523768798d"),
-                            CreatedTime = new DateTime(2024, 11, 21, 15, 9, 16, 837, DateTimeKind.Local).AddTicks(6943),
+                            user_id = new Guid("e99ab980-0d08-4d96-abc0-6093e3911473"),
+                            CreatedTime = new DateTime(2024, 11, 26, 15, 55, 57, 642, DateTimeKind.Local).AddTicks(8045),
                             Email = "nabeel@gmail.com",
                             IsBlocked = false,
                             Name = "nabeel",
-                            Password = "$2a$11$pReVrGcvw.wu9l4PSIkNFehP9FDb3HI3pspP.bqMv2Coyjjvit/se",
+                            Password = "$2a$11$pz6pQf7/8ih10igi5prNoeFwqtMZQNY4vYpbMSl7gxYz8hCF9NB4S",
                             Roles = "admin",
                             phoneNumber = "8129747407",
                             username = "nabeel"
@@ -292,6 +292,8 @@ namespace Ecommerce.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("wishlist_id");
+
+                    b.HasIndex("product_id");
 
                     b.HasIndex("user_id");
 
@@ -379,11 +381,19 @@ namespace Ecommerce.Migrations
 
             modelBuilder.Entity("Ecommerce.Models.WishList", b =>
                 {
+                    b.HasOne("Ecommerce.Models.Product", "product")
+                        .WithMany("wishLists")
+                        .HasForeignKey("product_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Ecommerce.Models.User", "user")
                         .WithMany("wishList")
                         .HasForeignKey("user_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("product");
 
                     b.Navigation("user");
                 });
@@ -408,6 +418,8 @@ namespace Ecommerce.Migrations
                     b.Navigation("cartItem");
 
                     b.Navigation("order");
+
+                    b.Navigation("wishLists");
                 });
 
             modelBuilder.Entity("Ecommerce.Models.User", b =>

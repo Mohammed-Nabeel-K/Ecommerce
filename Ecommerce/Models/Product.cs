@@ -16,6 +16,6 @@ namespace Ecommerce.Models
 
         public ICollection<CartItem> cartItem { get; set; }
         public ICollection<Order> order { get; set; }
-
+        public ICollection<WishList> wishLists { get; set; }
     }
 }

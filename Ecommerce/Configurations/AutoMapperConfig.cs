@@ -12,6 +12,9 @@ namespace Ecommerce.Configurations
             CreateMap<Product, ProductGetDTO>().ForMember(n => n.category_name, e => e.MapFrom(s => s.category.category_name));
             CreateMap<ProductDTO, Product>().ForPath(n => n.category.category_name, e => e.Ignore());
             CreateMap<WishlistDTO, WishList>();
+            CreateMap<WishList, WishlistGetDTO>().ForMember(n =>n.product_name, b => b.MapFrom(n => n.product.product_name))
+                .ForMember(n => n.product_price, b => b.MapFrom(n => n.product.price));
+
             CreateMap<Order,OrderUserDTO>().ForMember(n => n.product_name, e => e.MapFrom(s=> s.product.product_name));
             CreateMap<Order,OrderAdminDTO>().ForMember(n => n.product_name, e => e.MapFrom(a => a.product.product_name))
                 .ForMember(n => n.username,e => e.MapFrom(a => a.user.username));
